@@ -1,0 +1,42 @@
+name: b2b
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      cache_from:
+        - b2b-web:latest
+      args:
+        NEXT_PUBLIC_BASE_URL: "https://b2b.tengerly.com"
+        NEXT_PUBLIC_API_URL: "https://demo.tengerly.com"
+    image: b2b-web:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      NEXT_PUBLIC_BASE_URL: "https://b2b.tengerly.com"
+      NEXT_PUBLIC_API_URL: "https://demo.tengerly.com"
+      BREVO_API_KEY: "${BREVO_API_KEY:-}"
+      CONTACT_TO_EMAIL: "b2b@tengerly.com"
+    networks:
+      - proxy
+      - internal
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/',r=>{process.exit(r.statusCode<500?0:1)}).on('error',()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+networks:
+  proxy:
+    external: true
+  internal:
+    driver: bridge
+    internal: true

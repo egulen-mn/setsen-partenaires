@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+*.md
+logs
+ecosystem.config.js
+.env*.local
+.env.production
