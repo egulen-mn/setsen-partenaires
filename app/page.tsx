@@ -7,11 +7,11 @@ import {
   Handshake, CheckCircle, ChevronRight, BarChart2, Globe,
   Building2, Coffee, Scissors, ShoppingBag, Bed, Dumbbell,
   Mail, Send, MessageSquare, ExternalLink,
-  ChevronDown, MapPin, Scan, FileText, UserPlus, Clock,
+  ChevronDown, MapPin, Scan, FileText, UserPlus, Clock, Store,
 } from 'lucide-react';
 import TengerlyFooter from './components/TengerlyFooter';
 
-const STEPS = [
+const STEPS_PARTNER = [
   {
     num: '01',
     title: 'Créez votre compte partenaire',
@@ -23,8 +23,8 @@ const STEPS = [
   },
   {
     num: '02',
-    title: 'Connectez-vous avec des restaurants',
-    desc: 'Invitez un restaurant de votre quartier ou acceptez une invitation reçue. Le partenariat est bidirectionnel.',
+    title: 'Invitez un restaurant ou acceptez une invitation',
+    desc: 'Invitez un restaurant de votre quartier ou acceptez une invitation reçue. Le partenariat est activé après signature numérique.',
     icon: Handshake,
     color: 'text-purple-600',
     bg: 'bg-purple-50',
@@ -33,7 +33,7 @@ const STEPS = [
   {
     num: '03',
     title: 'Générez vos QR codes',
-    desc: 'Un QR code unique par chambre, bureau, table ou zone. Un QR unifié si vous avez plusieurs restaurants partenaires.',
+    desc: 'Un QR code unique par chambre, bureau ou zone. Si vous avez plusieurs restaurants partenaires, un QR unifié redirige vers votre page marketplace.',
     icon: QrCode,
     color: 'text-[#c8102e]',
     bg: 'bg-red-50',
@@ -42,7 +42,7 @@ const STEPS = [
   {
     num: '04',
     title: 'Vos clients scannent & commandent',
-    desc: 'Le client scanne le QR, découvre le menu du restaurant et commande directement. Aucune app à télécharger.',
+    desc: 'Le client scanne le QR, découvre le menu et commande directement. Aucune app à télécharger.',
     icon: Scan,
     color: 'text-emerald-600',
     bg: 'bg-emerald-50',
@@ -51,7 +51,7 @@ const STEPS = [
   {
     num: '05',
     title: 'Commissions calculées automatiquement',
-    desc: 'Chaque commande est liée à votre code. La commission est calculée en temps réel selon le taux négocié.',
+    desc: 'Chaque commande est liée à votre code. La commission est calculée en temps réel selon le taux négocié avec le restaurant.',
     icon: Euro,
     color: 'text-amber-600',
     bg: 'bg-amber-50',
@@ -60,7 +60,64 @@ const STEPS = [
   {
     num: '06',
     title: 'Relevé & paiement mensuel',
-    desc: 'Un relevé PDF détaillé est généré automatiquement. Vous êtes payé selon le cycle convenu.',
+    desc: 'Un relevé PDF détaillé est généré automatiquement chaque cycle. Transparent, vérifiable, sans effort.',
+    icon: FileText,
+    color: 'text-teal-600',
+    bg: 'bg-teal-50',
+    ring: 'ring-teal-100',
+  },
+];
+
+const STEPS_RESTAURANT = [
+  {
+    num: '01',
+    title: 'Rejoignez la plateforme Tengerly',
+    desc: 'Votre restaurant doit être sur Tengerly pour activer la commande digitale. Contactez-nous pour l\'onboarding — c\'est rapide.',
+    icon: Store,
+    color: 'text-blue-600',
+    bg: 'bg-blue-50',
+    ring: 'ring-blue-100',
+  },
+  {
+    num: '02',
+    title: 'Invitez vos partenaires locaux',
+    desc: 'Depuis votre back-office, envoyez des invitations aux hôtels, bureaux ou commerces de votre quartier. Ils reçoivent un email et créent leur compte.',
+    icon: Send,
+    color: 'text-purple-600',
+    bg: 'bg-purple-50',
+    ring: 'ring-purple-100',
+  },
+  {
+    num: '03',
+    title: 'Définissez le taux de commission',
+    desc: 'Fixez un taux différent pour chaque partenaire. Modifiez-le à tout moment depuis votre tableau de bord.',
+    icon: Euro,
+    color: 'text-amber-600',
+    bg: 'bg-amber-50',
+    ring: 'ring-amber-100',
+  },
+  {
+    num: '04',
+    title: 'Vos partenaires placent les QR codes',
+    desc: 'Chaque partenaire génère ses propres QR codes et les dépose dans ses espaces — chambres, salles de réunion, comptoirs.',
+    icon: QrCode,
+    color: 'text-[#c8102e]',
+    bg: 'bg-red-50',
+    ring: 'ring-red-100',
+  },
+  {
+    num: '05',
+    title: 'Les clients scannent & commandent',
+    desc: 'Chaque scan est attribué au partenaire et à l\'emplacement exact. Vous recevez les commandes en temps réel en cuisine.',
+    icon: Scan,
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-50',
+    ring: 'ring-emerald-100',
+  },
+  {
+    num: '06',
+    title: 'Relevés automatiques, zéro gestion',
+    desc: 'Les commissions sont calculées et les relevés générés automatiquement. Vous gardez le contrôle total sans travail administratif.',
     icon: FileText,
     color: 'text-teal-600',
     bg: 'bg-teal-50',
@@ -128,6 +185,7 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', company: '', message: '' });
   const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [howTab, setHowTab] = useState<'partner' | 'restaurant'>('partner');
   const contactRef = useRef<HTMLElement>(null);
 
   const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -278,22 +336,62 @@ export default function LandingPage() {
       {/* ─── How it works (L ≈ 0.97, stone-50) ─── */}
       <section id="comment-ca-marche" className="py-24 bg-stone-50/80">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Comment ça fonctionne</h2>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Du premier contact au premier paiement en 6 étapes simples.
+              Le réseau est bidirectionnel — partenaires et restaurants peuvent tous les deux initier la relation.
             </p>
+          </div>
+
+          {/* Tab switcher */}
+          <div className="flex justify-center mb-12">
+            <div className="inline-flex bg-white border border-stone-200 rounded-2xl p-1.5 shadow-sm gap-1">
+              <button
+                onClick={() => setHowTab('partner')}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  howTab === 'partner'
+                    ? 'bg-[#c8102e] text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Building2 size={15} />
+                Je suis un partenaire
+              </button>
+              <button
+                onClick={() => setHowTab('restaurant')}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  howTab === 'restaurant'
+                    ? 'bg-slate-800 text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Store size={15} />
+                Je suis un restaurant
+              </button>
+            </div>
+          </div>
+
+          {/* Context banner */}
+          <div className={`max-w-4xl mx-auto mb-8 px-5 py-3.5 rounded-xl text-sm flex items-start gap-3 ${
+            howTab === 'partner'
+              ? 'bg-[#c8102e]/5 border border-[#c8102e]/15 text-[#c8102e]'
+              : 'bg-slate-800/5 border border-slate-800/15 text-slate-700'
+          }`}>
+            <CheckCircle size={16} className="shrink-0 mt-0.5" />
+            {howTab === 'partner'
+              ? 'Vous êtes un hôtel, bureau, salon ou commerce — vous placez des QR codes et gagnez une commission sur chaque commande.'
+              : 'Votre restaurant est sur Tengerly — vous invitez des partenaires locaux et ils deviennent vos apporteurs d\'affaires, sans effort de votre côté.'}
           </div>
 
           <div className="max-w-4xl mx-auto">
             <div className="grid gap-5">
-              {STEPS.map((step, i) => (
+              {(howTab === 'partner' ? STEPS_PARTNER : STEPS_RESTAURANT).map((step, i, arr) => (
                 <div key={step.num} className="group flex gap-5 items-start">
                   <div className="flex flex-col items-center shrink-0">
                     <div className={`w-12 h-12 rounded-xl ${step.bg} ring-1 ${step.ring} flex items-center justify-center`}>
                       <step.icon size={22} className={step.color} />
                     </div>
-                    {i < STEPS.length - 1 && (
+                    {i < arr.length - 1 && (
                       <div className="w-px h-full min-h-[20px] bg-gradient-to-b from-stone-200 to-stone-100 mt-2" />
                     )}
                   </div>
@@ -307,10 +405,23 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="text-center mt-12">
-            <Link href="/signup" className="inline-flex items-center gap-2 bg-[#c8102e] hover:bg-[#a00d25] text-white px-6 py-3 rounded-full font-semibold transition shadow-sm">
-              Commencer maintenant <ArrowRight size={18} />
-            </Link>
+          <div className="text-center mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+            {howTab === 'partner' ? (
+              <Link href="/signup" className="inline-flex items-center gap-2 bg-[#c8102e] hover:bg-[#a00d25] text-white px-6 py-3 rounded-full font-semibold transition shadow-sm">
+                Créer mon compte partenaire <ArrowRight size={18} />
+              </Link>
+            ) : (
+              <>
+                <a href="https://qr.tengerly.com" target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-full font-semibold transition shadow-sm">
+                  Rejoindre Tengerly <ExternalLink size={16} />
+                </a>
+                <button onClick={scrollToContact}
+                  className="inline-flex items-center gap-2 border border-slate-300 hover:border-slate-400 text-slate-700 px-6 py-3 rounded-full font-semibold transition">
+                  Nous contacter <ChevronRight size={16} />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </section>
