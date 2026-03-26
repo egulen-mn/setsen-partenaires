@@ -372,18 +372,18 @@ export default function LandingPage() {
           </div>
 
           {/* Context banner */}
-          <div className={`max-w-4xl mx-auto mb-8 px-5 py-3.5 rounded-xl text-sm flex items-start gap-3 ${
+          <div className={`max-w-2xl mx-auto mb-8 px-5 py-3.5 rounded-xl text-sm flex items-start gap-3 ${
             howTab === 'partner'
-              ? 'bg-[#c8102e]/5 border border-[#c8102e]/15 text-[#c8102e]'
-              : 'bg-slate-800/5 border border-slate-800/15 text-slate-700'
+              ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+              : 'bg-blue-50 border border-blue-200 text-blue-800'
           }`}>
-            <CheckCircle size={16} className="shrink-0 mt-0.5" />
+            <CheckCircle size={16} className={`shrink-0 mt-0.5 ${howTab === 'partner' ? 'text-emerald-500' : 'text-blue-500'}`} />
             {howTab === 'partner'
               ? 'Vous êtes un hôtel, bureau, salon ou commerce — vous placez des QR codes et gagnez une commission sur chaque commande.'
               : 'Votre restaurant est sur Tengerly — vous invitez des partenaires locaux et ils deviennent vos apporteurs d\'affaires, sans effort de votre côté.'}
           </div>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-2xl mx-auto">
             <div className="grid gap-5">
               {(howTab === 'partner' ? STEPS_PARTNER : STEPS_RESTAURANT).map((step, i, arr) => (
                 <div key={step.num} className="group flex gap-5 items-start">
@@ -405,7 +405,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="text-center mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="max-w-2xl mx-auto text-center mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
             {howTab === 'partner' ? (
               <Link href="/signup" className="inline-flex items-center gap-2 bg-[#c8102e] hover:bg-[#a00d25] text-white px-6 py-3 rounded-full font-semibold transition shadow-sm">
                 Créer mon compte partenaire <ArrowRight size={18} />
