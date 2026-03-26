@@ -63,11 +63,16 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className={`border rounded-2xl p-8 space-y-5 ${cardBg}`}>
-          {error && (
+          {error === 'pending_approval' ? (
+            <div className={`p-4 rounded-xl border text-sm space-y-1 ${isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
+              <p className="font-semibold flex items-center gap-2"><AlertCircle size={15} /> Compte en attente d&apos;approbation</p>
+              <p className={isDark ? 'text-amber-400/80' : 'text-amber-700'}>Notre équipe examine votre demande. Vous serez notifié par email une fois votre compte activé.</p>
+            </div>
+          ) : error ? (
             <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm">
               <AlertCircle size={16} /> {error}
             </div>
-          )}
+          ) : null}
 
           <div>
             <label className={`block text-sm font-medium mb-1.5 ${labelCls}`}>Email</label>
