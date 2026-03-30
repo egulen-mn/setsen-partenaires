@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-const STORAGE_KEY = 'tengerly_b2b_cookie_consent';
+const STORAGE_KEY = 'setsen_partenaires_cookie_consent';
 
 export default function CookieConsent() {
   const pathname = usePathname();

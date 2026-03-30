@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { Users } from 'lucide-react';
-import TengerlyFooter from '@/app/components/TengerlyFooter';
+import SetsenFooter from '@/app/components/SetsenFooter';
 
 export const metadata = {
-  title: "Conditions d'utilisation — Tengerly B2B",
+  title: "Conditions d'utilisation — Setsen Partenaires",
 };
 
 export default function TermsPage() {
@@ -13,7 +13,7 @@ export default function TermsPage() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Users size={22} className="text-[#c8102e]" />
-            <span className="text-lg font-bold text-gray-900">Tengerly <span className="text-[#c8102e]">B2B</span></span>
+            <span className="text-lg font-bold text-gray-900">Setsen <span className="text-[#c8102e]">Partenaires</span></span>
           </Link>
           <Link href="/" className="text-sm text-gray-500 hover:text-[#c8102e] transition-colors">← Retour</Link>
         </div>
@@ -33,18 +33,18 @@ export default function TermsPage() {
               <div>Numéro d&apos;enregistrement : 16949002</div>
               <div>Harju maakond, Tallinn, Kesklinna linnaosa, Juhkentali tn 8, 10132</div>
               <div>Bureau France · Aix-les-Bains, 73100</div>
-              <div><a href="mailto:hello@tengerly.com" className="text-[#c8102e]">hello@tengerly.com</a></div>
+              <div><a href="mailto:hello@setsen.fr" className="text-[#c8102e]">hello@setsen.fr</a></div>
             </div>
           </section>
 
           <section>
             <h2 className="text-base font-bold text-gray-900 mb-3">2. Objet du site</h2>
-            <p className="text-gray-600">Ce site présente le programme de parrainage Tengerly B2B, permettant à des partenaires commerciaux (hôtels, espaces de coworking, résidences, etc.) de référer des clients vers des restaurants partenaires et de percevoir une commission sur les commandes générées.</p>
+            <p className="text-gray-600">Ce site présente le programme de parrainage Setsen Partenaires, permettant à des partenaires commerciaux (hôtels, espaces de coworking, résidences, etc.) de référer des clients vers des restaurants partenaires et de percevoir une commission sur les commandes générées.</p>
           </section>
 
           <section>
             <h2 className="text-base font-bold text-gray-900 mb-3">3. Accès au service</h2>
-            <p className="text-gray-600">L&apos;accès au tableau de bord partenaire est réservé aux partenaires disposant d&apos;un code partenaire valide, fourni par Tengerly. Toute tentative d&apos;accès non autorisé est interdite.</p>
+            <p className="text-gray-600">L&apos;accès au tableau de bord partenaire est réservé aux partenaires disposant d&apos;un code partenaire valide, fourni par Setsen. Toute tentative d&apos;accès non autorisé est interdite.</p>
           </section>
 
           <section>
@@ -54,7 +54,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-base font-bold text-gray-900 mb-3">5. Commissions et paiements</h2>
-            <p className="text-gray-600">Les taux de commission sont définis contractuellement avec chaque partenaire. Tengerly se réserve le droit de modifier les taux avec un préavis raisonnable. Les commissions sont calculées sur le montant hors taxes des commandes référées et validées.</p>
+            <p className="text-gray-600">Les taux de commission sont définis contractuellement avec chaque partenaire. Setsen se réserve le droit de modifier les taux avec un préavis raisonnable. Les commissions sont calculées sur le montant hors taxes des commandes référées et validées.</p>
           </section>
 
           <section>
@@ -74,7 +74,7 @@ export default function TermsPage() {
         </div>
       </main>
 
-      <TengerlyFooter />
+      <SetsenFooter />
     </div>
   );
 }

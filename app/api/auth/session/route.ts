@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 const MAX_AGE = 60 * 60 * 24 * 7;
 
 const COOKIE_OPTS = {
-  name: 'b2b_session',
+  name: 'partenaires_session',
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'lax' as const,
@@ -14,7 +14,7 @@ const COOKIE_OPTS = {
 /**
  * POST /api/auth/session
  * Called after a successful login. Sets a lightweight presence flag cookie
- * on the b2b.tengerly.com origin so the middleware can gate /dashboard routes
+ * on the partenaires.setsen.fr origin so the middleware can gate /dashboard routes
  * without needing access to the API-origin auth cookies.
  *
  * This cookie carries NO sensitive data — it is a presence signal only.

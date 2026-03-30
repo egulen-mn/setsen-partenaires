@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ChefHat, ExternalLink, Loader2 } from 'lucide-react';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://demo.tengerly.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://demo.setsen.fr';
 
 interface Restaurant {
   name: string;
@@ -46,7 +46,7 @@ export default function MarketplacePage() {
   }, [code]);
 
   function setCookie(refCode: string) {
-    document.cookie = `tengerly_ref=${refCode};path=/;max-age=604800;samesite=lax`;
+    document.cookie = `setsen_ref=${refCode};path=/;max-age=604800;samesite=lax`;
   }
 
   function handleSelect(restaurant: Restaurant) {
@@ -116,7 +116,7 @@ export default function MarketplacePage() {
       {/* Footer */}
       <footer className="fixed bottom-0 inset-x-0 bg-white border-t border-gray-100 py-3 px-4 text-center">
         <p className="text-xs text-gray-400">
-          Propulsé par <a href="https://tengerly.com" target="_blank" rel="noopener noreferrer" className="text-[#c8102e] font-medium">Tengerly</a>
+          Propulsé par <a href="https://setsen.fr" target="_blank" rel="noopener noreferrer" className="text-[#c8102e] font-medium">Setsen</a>
         </p>
       </footer>
     </div>

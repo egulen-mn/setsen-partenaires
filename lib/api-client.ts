@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://demo.tengerly.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://demo.setsen.fr';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 

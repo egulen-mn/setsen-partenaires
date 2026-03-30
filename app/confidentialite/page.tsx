@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { Users } from 'lucide-react';
-import TengerlyFooter from '@/app/components/TengerlyFooter';
+import SetsenFooter from '@/app/components/SetsenFooter';
 
 export const metadata = {
-  title: 'Politique de confidentialité — Tengerly B2B',
+  title: 'Politique de confidentialité — Setsen Partenaires',
 };
 
 export default function PrivacyPage() {
@@ -13,7 +13,7 @@ export default function PrivacyPage() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Users size={22} className="text-[#c8102e]" />
-            <span className="text-lg font-bold text-gray-900">Tengerly <span className="text-[#c8102e]">B2B</span></span>
+            <span className="text-lg font-bold text-gray-900">Setsen <span className="text-[#c8102e]">Partenaires</span></span>
           </Link>
           <Link href="/" className="text-sm text-gray-500 hover:text-[#c8102e] transition-colors">← Retour</Link>
         </div>
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
               <div>Numéro d&apos;enregistrement : 16949002</div>
               <div>Harju maakond, Tallinn, Kesklinna linnaosa, Juhkentali tn 8, 10132</div>
               <div>Bureau France · Aix-les-Bains, 73100</div>
-              <div><a href="mailto:hello@tengerly.com" className="text-[#c8102e]">hello@tengerly.com</a></div>
+              <div><a href="mailto:hello@setsen.fr" className="text-[#c8102e]">hello@setsen.fr</a></div>
             </div>
           </section>
 
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
               <li>Droit à la limitation du traitement</li>
               <li>Droit à la portabilité des données</li>
             </ul>
-            <p className="text-gray-600 mt-3">Pour exercer ces droits, contactez-nous à : <a href="mailto:hello@tengerly.com" className="text-[#c8102e]">hello@tengerly.com</a></p>
+            <p className="text-gray-600 mt-3">Pour exercer ces droits, contactez-nous à : <a href="mailto:hello@setsen.fr" className="text-[#c8102e]">hello@setsen.fr</a></p>
           </section>
         </div>
 
@@ -85,7 +85,7 @@ export default function PrivacyPage() {
         </div>
       </main>
 
-      <TengerlyFooter />
+      <SetsenFooter />
     </div>
   );
 }

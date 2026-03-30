@@ -7,8 +7,8 @@ import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/lib/theme-context';
 import ConfirmModal from '@/app/components/ConfirmModal';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://demo.tengerly.com';
-const B2B_BASE = typeof window !== 'undefined' ? window.location.origin : 'https://b2b.tengerly.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://demo.setsen.fr';
+const B2B_BASE = typeof window !== 'undefined' ? window.location.origin : 'https://partenaires.setsen.fr';
 
 export default function QrCodesPage() {
   const { partnerships, partner } = useAuth();

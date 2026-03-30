@@ -123,8 +123,8 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <h1 className="text-3xl font-bold tracking-tight">
-              <span className="text-[#c8102e]">Tengerly</span>
-              <span className={isDark ? ' text-white' : ' text-gray-900'}> B2B</span>
+              <span className="text-[#c8102e]">Setsen</span>
+              <span className={isDark ? ' text-white' : ' text-gray-900'}> Partenaires</span>
             </h1>
           </Link>
           <p className={`mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Créez votre compte partenaire</p>

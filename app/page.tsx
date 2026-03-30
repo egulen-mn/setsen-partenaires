@@ -9,7 +9,7 @@ import {
   Mail, Send, MessageSquare, ExternalLink,
   ChevronDown, MapPin, Scan, FileText, UserPlus, Clock, Store,
 } from 'lucide-react';
-import TengerlyFooter from './components/TengerlyFooter';
+import SetsenFooter from './components/SetsenFooter';
 
 const STEPS_PARTNER = [
   {
@@ -71,8 +71,8 @@ const STEPS_PARTNER = [
 const STEPS_RESTAURANT = [
   {
     num: '01',
-    title: 'Rejoignez la plateforme Tengerly',
-    desc: 'Votre restaurant doit être sur Tengerly pour activer la commande digitale. Contactez-nous pour l\'onboarding — c\'est rapide.',
+    title: 'Rejoignez la plateforme Setsen',
+    desc: 'Votre restaurant doit être sur Setsen pour activer la commande digitale. Contactez-nous pour l\'onboarding — c\'est rapide.',
     icon: Store,
     color: 'text-blue-600',
     bg: 'bg-blue-50',
@@ -152,7 +152,7 @@ const BENEFITS_PARTNER = [
 
 const FAQ = [
   {
-    q: 'C\'est quoi Tengerly B2B exactement ?',
+    q: 'C\'est quoi Setsen Partenaires exactement ?',
     a: 'C\'est un réseau de partenariats local qui connecte les restaurants avec des établissements voisins (hôtels, bureaux, salons…). Les partenaires recommandent le restaurant à leurs clients via des QR codes, et gagnent une commission sur chaque commande générée.',
   },
   {
@@ -173,7 +173,7 @@ const FAQ = [
   },
   {
     q: 'Comment fonctionne la commande digitale ?',
-    a: 'Les QR codes partenaires redirigent vers le menu digital du restaurant propulsé par la plateforme Tengerly. Les clients peuvent commander instantanément — sans télécharger d\'application.',
+    a: 'Les QR codes partenaires redirigent vers le menu digital du restaurant propulsé par la plateforme Setsen. Les clients peuvent commander instantanément — sans télécharger d\'application.',
   },
   {
     q: 'Comment signer un accord de partenariat ?',
@@ -216,8 +216,8 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f172a]/90 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold">
-            <span className="text-[#c8102e]">Tengerly</span>
-            <span className="text-white/70 font-normal ml-1">B2B</span>
+            <span className="text-[#c8102e]">Setsen</span>
+            <span className="text-white/70 font-normal ml-1">Partenaires</span>
           </Link>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-400">
             <a href="#comment-ca-marche" className="hover:text-white transition">Fonctionnement</a>
@@ -380,7 +380,7 @@ export default function LandingPage() {
             <CheckCircle size={16} className={`shrink-0 mt-0.5 ${howTab === 'partner' ? 'text-emerald-500' : 'text-blue-500'}`} />
             {howTab === 'partner'
               ? 'Vous êtes un hôtel, bureau, salon ou commerce — vous placez des QR codes et gagnez une commission sur chaque commande.'
-              : 'Votre restaurant est sur Tengerly — vous invitez des partenaires locaux et ils deviennent vos apporteurs d\'affaires, sans effort de votre côté.'}
+              : 'Votre restaurant est sur Setsen — vous invitez des partenaires locaux et ils deviennent vos apporteurs d\'affaires, sans effort de votre côté.'}
           </div>
 
           <div className="max-w-2xl mx-auto">
@@ -412,9 +412,9 @@ export default function LandingPage() {
               </Link>
             ) : (
               <>
-                <a href="https://qr.tengerly.com" target="_blank" rel="noopener noreferrer"
+                <a href="https://setsen.fr" target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-full font-semibold transition shadow-sm">
-                  Rejoindre Tengerly <ExternalLink size={16} />
+                  Rejoindre Setsen <ExternalLink size={16} />
                 </a>
                 <button onClick={scrollToContact}
                   className="inline-flex items-center gap-2 border border-slate-300 hover:border-slate-400 text-slate-700 px-6 py-3 rounded-full font-semibold transition">
@@ -432,11 +432,11 @@ export default function LandingPage() {
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c8102e]/8 text-[#c8102e] text-xs font-semibold mb-4">
-                <QrCode size={14} /> Technologie Tengerly
+                <QrCode size={14} /> Technologie Setsen
               </div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Propulsé par la plateforme <span className="text-[#c8102e]">Tengerly</span></h2>
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">Propulsé par la plateforme <span className="text-[#c8102e]">Setsen</span></h2>
               <p className="text-slate-500 leading-relaxed mb-6">
-                Le B2B Network repose sur la même technologie que le système de commande digitale Tengerly utilisé par les restaurants.
+                Le réseau Partenaires repose sur la même technologie que le système de commande digitale Setsen utilisé par les restaurants.
                 Quand un client scanne un QR code partenaire, il est redirigé vers le menu digital du restaurant et peut commander instantanément — sans télécharger d&apos;application.
               </p>
               <div className="space-y-3">
@@ -452,12 +452,12 @@ export default function LandingPage() {
                 ))}
               </div>
               <a
-                href="https://qr.tengerly.com"
+                href="https://setsen.fr"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 mt-6 text-sm text-[#c8102e] hover:text-[#a00d25] font-medium transition"
               >
-                Découvrir qr.tengerly.com <ExternalLink size={14} />
+                Découvrir setsen.fr <ExternalLink size={14} />
               </a>
             </div>
 
@@ -596,7 +596,7 @@ export default function LandingPage() {
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Parlons de votre partenariat</h2>
               <p className="text-slate-500 leading-relaxed mb-8">
                 Vous êtes un hôtel, un espace de coworking, un salon ou tout autre établissement avec une clientèle locale ?
-                Dites-nous en plus et nous vous mettrons en relation avec les restaurants Tengerly de votre zone.
+                Dites-nous en plus et nous vous mettrons en relation avec les restaurants Setsen de votre zone.
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-slate-700">
@@ -605,7 +605,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <div className="text-xs text-slate-400">Email</div>
-                    <a href="mailto:hello@tengerly.com" className="text-sm hover:text-[#c8102e] transition">hello@tengerly.com</a>
+                    <a href="mailto:hello@setsen.fr" className="text-sm hover:text-[#c8102e] transition">hello@setsen.fr</a>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-slate-700">
@@ -672,7 +672,7 @@ export default function LandingPage() {
                       : <><Send size={16} /> Envoyer le message</>}
                   </button>
                   {contactStatus === 'error' && (
-                    <p className="text-center text-sm text-red-500">Erreur lors de l&apos;envoi. Réessayez ou écrivez à hello@tengerly.com.</p>
+                    <p className="text-center text-sm text-red-500">Erreur lors de l&apos;envoi. Réessayez ou écrivez à hello@setsen.fr.</p>
                   )}
                 </>
               )}
@@ -696,7 +696,7 @@ export default function LandingPage() {
             Prêt à développer votre réseau local ?
           </h2>
           <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
-            Rejoignez le réseau Tengerly et commencez à générer des revenus complémentaires dès aujourd&apos;hui.
+            Rejoignez le réseau Setsen Partenaires et commencez à générer des revenus complémentaires dès aujourd&apos;hui.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/signup" className="flex items-center gap-2 bg-white text-[#c8102e] px-8 py-3.5 rounded-full font-bold text-lg hover:bg-gray-100 transition shadow-lg">
@@ -709,7 +709,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <TengerlyFooter />
+      <SetsenFooter />
     </div>
   );
 }

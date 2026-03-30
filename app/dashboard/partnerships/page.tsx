@@ -138,7 +138,7 @@ export default function PartnershipsPage() {
             <Building2 size={16} className="inline mr-2" />Inviter un restaurant
           </h3>
           <p className={`text-sm ${muted}`}>
-            Le restaurant recevra un email avec des identifiants pour accéder à la plateforme Tengerly.
+            Le restaurant recevra un email avec des identifiants pour accéder à la plateforme Setsen.
             Son compte sera en attente d&apos;activation par notre équipe.
           </p>
           <div className="grid sm:grid-cols-2 gap-4">

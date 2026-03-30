@@ -81,8 +81,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <div className={`p-5 border-b ${divider} flex items-center justify-between`}>
           <Link href="/dashboard" onClick={() => setSidebarOpen(false)}>
             <h1 className="text-xl font-bold tracking-tight">
-              <span className="text-[#c8102e]">Tengerly</span>
-              <span className={isDark ? ' text-white' : ' text-gray-900'}> B2B</span>
+              <span className="text-[#c8102e]">Setsen</span>
+              <span className={isDark ? ' text-white' : ' text-gray-900'}> Partenaires</span>
             </h1>
           </Link>
           <button onClick={() => setSidebarOpen(false)} className={`lg:hidden ${iconBtn} p-1 rounded`}>

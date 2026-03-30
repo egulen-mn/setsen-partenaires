@@ -16,8 +16,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ARG NEXT_PUBLIC_BASE_URL=https://b2b.tengerly.com
-ARG NEXT_PUBLIC_API_URL=https://demo.tengerly.com
+ARG NEXT_PUBLIC_BASE_URL=https://partenaires.setsen.fr
+ARG NEXT_PUBLIC_API_URL=https://demo.setsen.fr
 ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build

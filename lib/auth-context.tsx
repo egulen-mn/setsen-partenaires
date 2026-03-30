@@ -43,12 +43,12 @@ const AuthContext = createContext<AuthState>({
   login: async () => {}, logout: async () => {}, refresh: async () => {},
 });
 
-/** Set the b2b_session presence flag on this origin. Fire-and-forget — never throws. */
+/** Set the partenaires_session presence flag on this origin. Fire-and-forget — never throws. */
 async function setSessionFlag() {
   try { await fetch('/api/auth/session', { method: 'POST' }); } catch {}
 }
 
-/** Clear the b2b_session presence flag on this origin. Fire-and-forget — never throws. */
+/** Clear the partenaires_session presence flag on this origin. Fire-and-forget — never throws. */
 async function clearSessionFlag() {
   try { await fetch('/api/auth/session', { method: 'DELETE' }); } catch {}
 }

@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'b2b',
+    name: 'partenaires',
     script: 'npm',
     args: 'start',
     cwd: '/srv/apps/b2b',
@@ -12,7 +12,7 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: 3014,
-      NEXT_PUBLIC_SITE_URL: 'https://b2b.tengerly.com'
+      NEXT_PUBLIC_SITE_URL: 'https://partenaires.setsen.fr'
     },
     error_file: '/srv/apps/b2b/logs/error.log',
     out_file: '/srv/apps/b2b/logs/out.log',

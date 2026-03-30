@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Tengerly B2B Network — Portail Partenaire",
-  description: "Gérez vos partenariats restaurant, suivez vos commissions et générez vos QR codes depuis votre espace partenaire Tengerly.",
+  title: "Setsen Partenaires — Portail Partenaire",
+  description: "Gérez vos partenariats restaurant, suivez vos commissions et générez vos QR codes depuis votre espace partenaire Setsen.",
 };
 
 export default function RootLayout({

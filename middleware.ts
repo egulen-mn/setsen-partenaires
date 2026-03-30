@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith('/dashboard')) {
-    const session = request.cookies.get('b2b_session');
+    const session = request.cookies.get('partenaires_session');
     if (!session?.value) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/login';

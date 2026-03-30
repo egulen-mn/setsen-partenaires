@@ -1,4 +1,4 @@
-name: b2b
+name: partenaires
 
 services:
   web:
@@ -6,20 +6,20 @@ services:
       context: .
       dockerfile: Dockerfile
       cache_from:
-        - b2b-web:latest
+        - partenaires-web:latest
       args:
-        NEXT_PUBLIC_BASE_URL: "https://b2b.tengerly.com"
-        NEXT_PUBLIC_API_URL: "https://demo.tengerly.com"
-    image: b2b-web:latest
+        NEXT_PUBLIC_BASE_URL: "https://partenaires.setsen.fr"
+        NEXT_PUBLIC_API_URL: "https://demo.setsen.fr"
+    image: partenaires-web:latest
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
-      NEXT_PUBLIC_BASE_URL: "https://b2b.tengerly.com"
-      NEXT_PUBLIC_API_URL: "https://demo.tengerly.com"
+      NEXT_PUBLIC_BASE_URL: "https://partenaires.setsen.fr"
+      NEXT_PUBLIC_API_URL: "https://demo.setsen.fr"
       BREVO_API_KEY: "${BREVO_API_KEY:-}"
-      CONTACT_TO_EMAIL: "b2b@tengerly.com"
+      CONTACT_TO_EMAIL: "partenaires@setsen.fr"
     networks:
       - proxy
       - internal

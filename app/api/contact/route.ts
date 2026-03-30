@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
-const TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'hello@tengerly.com';
+const TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'hello@setsen.fr';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
         'api-key': BREVO_API_KEY,
       },
       body: JSON.stringify({
-        sender: { name: 'Tengerly B2B', email: 'noreply@tengerly.com' },
-        to: [{ email: TO_EMAIL, name: 'Tengerly B2B' }],
+        sender: { name: 'Setsen Partenaires', email: 'noreply@setsen.fr' },
+        to: [{ email: TO_EMAIL, name: 'Setsen Partenaires' }],
         replyTo: { email, name },
         subject: `[B2B Contact] ${company || name} — Nouveau partenaire potentiel`,
         htmlContent,
