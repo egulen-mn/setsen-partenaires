@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://demo.setsen.fr';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://setsen.fr';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
@@ -36,7 +36,7 @@ export const auth = {
   register: (data: { inviteToken: string; email: string; password: string; name: string }) =>
     request('POST', '/api/partner-auth/register', data),
 
-  selfRegister: (data: { email: string; password: string; name: string; companyName: string; phone?: string; category?: string; message?: string }) =>
+  selfRegister: (data: { email: string; password: string; name: string; companyName: string; phone?: string; category?: string; description?: string; message?: string; slug?: string }) =>
     request('POST', '/api/partner-auth/self-register', data),
 
   logout: () => request('POST', '/api/partner-auth/logout'),
@@ -73,8 +73,23 @@ export const qrCodes = {
 
   remove: (id: string) => request('DELETE', `/api/partner/qr-codes/${id}`),
 
-  update: (id: string, data: { label?: string; location?: string; active?: boolean }) =>
+  update: (id: string, data: { label?: string; location?: string; active?: boolean; isDefault?: boolean }) =>
     request('PATCH', `/api/partner/qr-codes/${id}`, data),
+
+  /** Generate a branded QR PDF. Pass `unified: true` for global partner QR (no placementId). */
+  generateAsset: async (opts: { placementId?: string; unified?: boolean; template: string; cta?: string }): Promise<Blob> => {
+    const res = await fetch(`${API_BASE}/api/partner/qr-codes/generate`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(opts),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new ApiError(res.status, data.error || `Request failed: ${res.status}`);
+    }
+    return res.blob();
+  },
 };
 
 // ── Partnerships ────────────────────────────────────────────────────────────
@@ -90,6 +105,9 @@ export const partnerships = {
 
   decline: (id: string) =>
     request('PATCH', `/api/partner/partnerships/${id}`, { action: 'decline' }),
+
+  terminate: (id: string) =>
+    request('PATCH', `/api/partner/partnerships/${id}`, { action: 'terminate' }),
 };
 
 // ── Partner Actions ─────────────────────────────────────────────────────────
@@ -99,8 +117,55 @@ export const partnerActions = {
     request('POST', '/api/partner/invite-restaurant', data),
 };
 
+// ── Restaurant Search ────────────────────────────────────────────────────────
+
+export const restaurants = {
+  search: (q: string) =>
+    request<{ restaurants: { id: string; name: string; slug: string; email: string | null; primaryDomain: string; address: string | null }[] }>(
+      'GET', `/api/partner/restaurants/search?q=${encodeURIComponent(q)}`
+    ),
+};
+
 // ── Payouts ─────────────────────────────────────────────────────────────────
 
 export const payouts = {
   list: () => request('GET', '/api/partner/payouts'),
+};
+
+// ── Profile ─────────────────────────────────────────────────────────────────
+
+export const profile = {
+  update: (data: { companyName?: string; address?: string; siret?: string; logoUrl?: string; description?: string }) =>
+    request('PATCH', '/api/partner-auth/profile', data),
+
+  uploadLogo: async (file: File): Promise<{ url: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_BASE}/api/partner-auth/upload-logo`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new ApiError(res.status, data.error || 'Upload failed');
+    }
+    return res.json();
+  },
+
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    request('POST', '/api/partner-auth/change-password', data),
+};
+
+// ── Password Reset ───────────────────────────────────────────────────────────
+
+export const passwordReset = {
+  requestReset: (email: string) =>
+    request('POST', '/api/partner-auth/forgot-password', { email }),
+
+  validateToken: (token: string): Promise<{ valid: boolean }> =>
+    request('GET', `/api/partner-auth/reset-password?token=${encodeURIComponent(token)}`),
+
+  resetPassword: (data: { token: string; password: string }) =>
+    request('POST', '/api/partner-auth/reset-password', data),
 };

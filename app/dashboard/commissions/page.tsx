@@ -4,14 +4,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { Euro, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ShoppingBag, Building2 } from 'lucide-react';
 import { commissions } from '@/lib/api-client';
 import { useTheme } from '@/lib/theme-context';
+import CustomSelect from '@/app/components/CustomSelect';
 
 const PAGE_SIZE = 20;
 
 const STATUS_FR: Record<string, string> = {
-  PENDING:   'En attente',
-  PAID:      'Payé',
-  VOID:      'Annulé',
-  CANCELLED: 'Annulé',
+  PENDING:   'Confirmée',
+  PAID:      'Payée',
+  VOID:      'Annulée',
+  CANCELLED: 'Annulée',
 };
 
 const ORDER_STATUS_FR: Record<string, string> = {
@@ -106,18 +107,14 @@ export default function CommissionsPage() {
   const card = isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-sm';
   const th = isDark ? 'text-gray-400 border-white/10' : 'text-gray-500 border-gray-200';
   const tr = isDark ? 'border-white/5 hover:bg-white/[0.03]' : 'border-gray-100 hover:bg-gray-50';
-  const select = isDark
-    ? 'bg-white/5 border-white/10 text-white'
-    : 'bg-white border-gray-300 text-gray-900';
-
   const pendingTotal = totals.find((t: any) => t.status === 'PENDING')?._sum?.commissionAmount || 0;
   const paidTotal = totals.find((t: any) => t.status === 'PAID')?._sum?.commissionAmount || 0;
 
   const badge: Record<string, string> = {
-    PENDING:   'bg-amber-500/20 text-amber-500 border border-amber-500/30',
+    PENDING:   'bg-blue-500/20 text-blue-500 border border-blue-500/30',
     PAID:      'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30',
     VOID:      'bg-red-500/20 text-red-500 border border-red-500/30',
-    CANCELLED: isDark ? 'bg-gray-500/20 text-gray-400 border border-gray-500/30' : 'bg-gray-100 text-gray-500 border border-gray-200',
+    CANCELLED: 'bg-red-500/20 text-red-500 border border-red-500/30',
   };
 
   return (
@@ -128,9 +125,9 @@ export default function CommissionsPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4">
-        <div className={`border rounded-xl p-4 ${isDark ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-200'}`}>
-          <div className={`text-sm mb-1 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>En attente</div>
-          <div className={`text-2xl font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{fmt(pendingTotal)}</div>
+        <div className={`border rounded-xl p-4 ${isDark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-200'}`}>
+          <div className={`text-sm mb-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>Confirmée</div>
+          <div className={`text-2xl font-bold ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{fmt(pendingTotal)}</div>
         </div>
         <div className={`border rounded-xl p-4 ${isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-200'}`}>
           <div className={`text-sm mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Payé</div>
@@ -141,17 +138,17 @@ export default function CommissionsPage() {
       {/* Filter */}
       <div className="flex items-center gap-2">
         <Filter size={14} className={muted} />
-        <select
+        <CustomSelect
           value={statusFilter}
-          onChange={e => { setStatusFilter(e.target.value); }}
-          className={`px-3 py-1.5 border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#c8102e]/50 ${select}`}
-        >
-          <option value="">Tous les statuts</option>
-          <option value="PENDING">En attente</option>
-          <option value="PAID">Payé</option>
-          <option value="VOID">Annulé</option>
-          <option value="CANCELLED">Refusé</option>
-        </select>
+          onChange={v => setStatusFilter(v)}
+          options={[
+            { value: 'PENDING', label: 'Confirmée' },
+            { value: 'PAID', label: 'Payée' },
+            { value: 'CANCELLED', label: 'Annulée' },
+          ]}
+          placeholder="Tous les statuts"
+          className="w-44"
+        />
       </div>
 
       {loading ? (

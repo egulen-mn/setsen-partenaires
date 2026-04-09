@@ -9,7 +9,11 @@ services:
         - partenaires-web:latest
       args:
         NEXT_PUBLIC_BASE_URL: "https://partenaires.setsen.fr"
-        NEXT_PUBLIC_API_URL: "https://demo.setsen.fr"
+        NEXT_PUBLIC_API_URL: "https://setsen.fr"
+        NEXT_PUBLIC_SENTRY_DSN: "${NEXT_PUBLIC_SENTRY_DSN:-}"
+        SENTRY_AUTH_TOKEN: "${SENTRY_AUTH_TOKEN:-}"
+        SENTRY_ORG: "${SENTRY_ORG:-setsen-fr}"
+        SENTRY_PROJECT: "${SENTRY_PROJECT:-javascript-nextjs}"
     image: partenaires-web:latest
     restart: unless-stopped
     environment:
@@ -17,9 +21,12 @@ services:
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
       NEXT_PUBLIC_BASE_URL: "https://partenaires.setsen.fr"
-      NEXT_PUBLIC_API_URL: "https://demo.setsen.fr"
+      NEXT_PUBLIC_API_URL: "https://setsen.fr"
       BREVO_API_KEY: "${BREVO_API_KEY:-}"
       CONTACT_TO_EMAIL: "partenaires@setsen.fr"
+      NEXT_PUBLIC_SENTRY_DSN: "${NEXT_PUBLIC_SENTRY_DSN:-}"
+      SENTRY_ORG: "${SENTRY_ORG:-setsen-fr}"
+      SENTRY_PROJECT: "${SENTRY_PROJECT:-javascript-nextjs}"
     networks:
       - proxy
       - internal

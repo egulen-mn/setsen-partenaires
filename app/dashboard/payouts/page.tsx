@@ -45,9 +45,13 @@ export default function PayoutsPage() {
   };
 
   const ledgerBadge: Record<string, string> = {
-    PENDING: 'bg-amber-500/20 text-amber-500',
-    PAID:    'bg-emerald-500/20 text-emerald-500',
-    VOID:    'bg-red-500/20 text-red-500',
+    PENDING:   'bg-blue-500/20 text-blue-500',
+    PAID:      'bg-emerald-500/20 text-emerald-500',
+    VOID:      'bg-red-500/20 text-red-500',
+    CANCELLED: 'bg-red-500/20 text-red-500',
+  };
+  const ledgerStatusFr: Record<string, string> = {
+    PENDING: 'Confirmée', PAID: 'Payée', VOID: 'Annulée', CANCELLED: 'Annulée',
   };
 
   if (loading) return <div className={`text-center py-20 ${muted}`}>Chargement...</div>;
@@ -126,7 +130,7 @@ export default function PayoutsPage() {
                           <td className={`py-1.5 ${muted}`}>{fmtDate(l.earnedAt)}</td>
                           <td className="py-1.5 text-center">
                             <span className={`px-1.5 py-0.5 rounded text-[10px] ${ledgerBadge[l.status] || ''}`}>
-                              {STATUS_FR[l.status] ?? l.status}
+                              {ledgerStatusFr[l.status] ?? l.status}
                             </span>
                           </td>
                         </tr>

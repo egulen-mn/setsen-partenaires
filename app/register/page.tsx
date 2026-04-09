@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { UserPlus, Mail, Lock, User, AlertCircle, CheckCircle, Sun, Moon } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, AlertCircle, CheckCircle, Sun, Moon, Building2, LogIn, PartyPopper } from 'lucide-react';
 import { auth } from '@/lib/api-client';
 import { useTheme } from '@/lib/theme-context';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'https://setsen.fr';
 
 function RegisterForm() {
   const router = useRouter();
@@ -20,12 +22,43 @@ function RegisterForm() {
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const [inviteInfo, setInviteInfo] = useState<{
+    email: string | null;
+    companyName: string | null;
+    contactName: string | null;
+    restaurantName: string | null;
+  } | null>(null);
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState('');
 
   const inputCls = isDark
     ? 'bg-white/5 border-white/10 text-white placeholder-gray-500 focus:ring-[#c8102e]/50'
     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-[#c8102e]/50';
+  const inputDisabledCls = isDark
+    ? 'bg-white/10 border-white/10 text-gray-400 cursor-not-allowed'
+    : 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed';
   const labelCls = isDark ? 'text-gray-400' : 'text-gray-600';
   const cardBg = isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-lg';
+
+  useEffect(() => {
+    if (!inviteToken) return;
+    setInviteLoading(true);
+    fetch(`${API_BASE}/api/partner-auth/invite-info?token=${encodeURIComponent(inviteToken)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          setInviteError(data.error);
+        } else {
+          setInviteInfo(data);
+          if (data.email) setEmail(data.email);
+          if (data.contactName) setName(data.contactName);
+        }
+      })
+      .catch(() => setInviteError("Impossible de vérifier l'invitation."))
+      .finally(() => setInviteLoading(false));
+  }, [inviteToken]);
 
   if (!inviteToken) {
     return (
@@ -33,6 +66,26 @@ function RegisterForm() {
         <AlertCircle size={48} className="mx-auto text-amber-500 mb-4" />
         <h2 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Lien d&apos;invitation invalide</h2>
         <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Vous avez besoin d&apos;un lien d&apos;invitation valide pour créer un compte partenaire.</p>
+        <Link href="/login" className="text-[#c8102e] hover:underline">Se connecter</Link>
+      </div>
+    );
+  }
+
+  if (inviteLoading) {
+    return (
+      <div className={`border rounded-2xl p-8 text-center ${cardBg}`}>
+        <span className="animate-spin inline-block w-6 h-6 border-2 border-[#c8102e]/30 border-t-[#c8102e] rounded-full mb-3" />
+        <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>Vérification de l&apos;invitation…</p>
+      </div>
+    );
+  }
+
+  if (inviteError) {
+    return (
+      <div className="text-center py-20">
+        <AlertCircle size={48} className="mx-auto text-red-500 mb-4" />
+        <h2 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Invitation invalide</h2>
+        <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{inviteError}</p>
         <Link href="/login" className="text-[#c8102e] hover:underline">Se connecter</Link>
       </div>
     );
@@ -46,7 +99,7 @@ function RegisterForm() {
     setLoading(true);
     try {
       await auth.register({ inviteToken, email, password, name });
-      router.push('/dashboard');
+      setSuccess(true);
     } catch (err: any) {
       setError(err.message || "Erreur lors de l'inscription");
     } finally {
@@ -54,10 +107,60 @@ function RegisterForm() {
     }
   };
 
+  if (success) {
+    return (
+      <div className={`border rounded-2xl p-8 text-center space-y-5 ${cardBg}`}>
+        <div className="flex justify-center">
+          <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
+            <PartyPopper size={32} className="text-emerald-500" />
+          </div>
+        </div>
+
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          Compte créé avec succès !
+        </h2>
+
+        <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+          Votre compte partenaire a été créé.
+          {inviteInfo?.restaurantName && (
+            <> Votre partenariat avec <strong className={isDark ? 'text-white' : 'text-gray-900'}>{inviteInfo.restaurantName}</strong> est maintenant actif.</>
+          )}
+        </p>
+
+        <div className={`p-4 rounded-lg text-left text-sm space-y-1.5 ${isDark ? 'bg-white/5' : 'bg-gray-50'}`}>
+          <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+            <span className="font-medium">Email :</span> {email}
+          </div>
+          {inviteInfo?.companyName && (
+            <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+              <span className="font-medium">Entreprise :</span> {inviteInfo.companyName}
+            </div>
+          )}
+        </div>
+
+        <Link
+          href="/login"
+          className="w-full flex items-center justify-center gap-2 py-3 bg-[#c8102e] hover:bg-[#a00d25] text-white rounded-lg font-semibold transition"
+        >
+          <LogIn size={17} /> Se connecter
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className={`border rounded-2xl p-8 space-y-5 ${cardBg}`}>
       <div className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-600 text-sm">
-        <CheckCircle size={16} /> Invitation valide — Créez votre compte partenaire
+        <CheckCircle size={16} />
+        <span>
+          Invitation valide
+          {inviteInfo?.restaurantName && (
+            <> — de la part de <strong>{inviteInfo.restaurantName}</strong></>
+          )}
+          {inviteInfo?.companyName && (
+            <> pour <strong>{inviteInfo.companyName}</strong></>
+          )}
+        </span>
       </div>
 
       {error && (
@@ -66,27 +169,80 @@ function RegisterForm() {
         </div>
       )}
 
-      {[
-        { label: 'Nom complet', value: name, setter: setName, type: 'text', icon: User, placeholder: 'Jean Dupont' },
-        { label: 'Email', value: email, setter: setEmail, type: 'email', icon: Mail, placeholder: 'votre@email.com' },
-        { label: 'Mot de passe', value: password, setter: setPassword, type: 'password', icon: Lock, placeholder: 'Min. 8 caractères' },
-        { label: 'Confirmer le mot de passe', value: confirm, setter: setConfirm, type: 'password', icon: Lock, placeholder: '••••••••' },
-      ].map(({ label, value, setter, type, icon: Icon, placeholder }) => (
-        <div key={label}>
-          <label className={`block text-sm font-medium mb-1.5 ${labelCls}`}>{label}</label>
-          <div className="relative">
-            <Icon size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type={type}
-              value={value}
-              onChange={e => setter(e.target.value)}
-              required
-              className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputCls}`}
-              placeholder={placeholder}
-            />
-          </div>
+      {/* Name */}
+      <div>
+        <label className={`block text-sm font-medium mb-1.5 ${labelCls}`}>Nom complet</label>
+        <div className="relative">
+          <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputCls}`}
+            placeholder="Jean Dupont"
+          />
         </div>
-      ))}
+      </div>
+
+      {/* Email — pre-filled and locked from invite */}
+      <div>
+        <label className={`block text-sm font-medium mb-1.5 ${labelCls}`}>
+          Email
+          {inviteInfo?.email && (
+            <span className="ml-2 text-xs text-amber-500 font-normal">(pré-rempli depuis l&apos;invitation)</span>
+          )}
+        </label>
+        <div className="relative">
+          <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="email"
+            value={email}
+            onChange={e => !inviteInfo?.email && setEmail(e.target.value)}
+            readOnly={!!inviteInfo?.email}
+            required
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inviteInfo?.email ? inputDisabledCls : inputCls}`}
+            placeholder="votre@email.com"
+          />
+        </div>
+        {inviteInfo?.email && (
+          <p className={`mt-1 text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+            L&apos;email est lié à votre invitation et ne peut pas être modifié.
+          </p>
+        )}
+      </div>
+
+      {/* Password */}
+      <div>
+        <label className={`block text-sm font-medium mb-1.5 ${labelCls}`}>Mot de passe</label>
+        <div className="relative">
+          <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputCls}`}
+            placeholder="Min. 8 caractères"
+          />
+        </div>
+      </div>
+
+      {/* Confirm password */}
+      <div>
+        <label className={`block text-sm font-medium mb-1.5 ${labelCls}`}>Confirmer le mot de passe</label>
+        <div className="relative">
+          <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="password"
+            value={confirm}
+            onChange={e => setConfirm(e.target.value)}
+            required
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputCls}`}
+            placeholder="••••••••"
+          />
+        </div>
+      </div>
 
       <button
         type="submit"

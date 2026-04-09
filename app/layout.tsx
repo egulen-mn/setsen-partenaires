@@ -11,8 +11,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Setsen Partenaires — Portail Partenaire",
+  title: "Setsen Partenaires · Réseau local pour restaurants",
   description: "Gérez vos partenariats restaurant, suivez vos commissions et générez vos QR codes depuis votre espace partenaire Setsen.",
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({

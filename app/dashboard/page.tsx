@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, Clock, CheckCircle, ShoppingBag, QrCode, RefreshCw, AlertTriangle } from 'lucide-react';
+import { TrendingUp, Clock, CheckCircle, ShoppingBag, QrCode, RefreshCw, AlertTriangle, AlertCircle, ExternalLink, UtensilsCrossed } from 'lucide-react';
 import Link from 'next/link';
 import { dashboard } from '@/lib/api-client';
+import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/lib/theme-context';
 
 interface DashboardStats {
@@ -57,6 +58,7 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { partner } = useAuth();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -101,11 +103,65 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <h1 className={`text-2xl font-bold ${heading}`}>Tableau de bord</h1>
 
+      {partner?.restaurantDomain && (
+        <a
+          href={`https://${partner.restaurantDomain}/admin/login`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`flex items-center justify-between gap-3 p-4 rounded-xl border transition ${isDark ? 'bg-[#c8102e]/10 border-[#c8102e]/20 hover:bg-[#c8102e]/15' : 'bg-red-50 border-red-200 hover:bg-red-100'}`}
+        >
+          <div className="flex items-center gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#c8102e]/20' : 'bg-red-100'}`}>
+              <UtensilsCrossed size={18} className="text-[#c8102e]" />
+            </div>
+            <div>
+              <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>BackOffice Restaurant</p>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Menu, commandes et paramètres</p>
+            </div>
+          </div>
+          <ExternalLink size={16} className={isDark ? 'text-gray-500' : 'text-gray-400'} />
+        </a>
+      )}
+
+      {partner && partner.complianceStatus === 'incomplete' && !(partner as any).restaurantDomain && (
+        <div className={`flex items-start gap-3 p-4 rounded-xl border ${isDark ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-200'}`}>
+          <AlertCircle size={18} className="text-amber-500 shrink-0 mt-0.5" />
+          <div>
+            <p className={`text-sm font-medium ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
+              Complétez votre profil pour activer les commissions et paiements.
+            </p>
+            <Link
+              href="/dashboard/profile"
+              className={`text-xs font-medium mt-1 inline-block ${isDark ? 'text-amber-400 hover:text-amber-300' : 'text-amber-600 hover:text-amber-700'}`}
+            >
+              Compléter le profil →
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {partner && ['profile_complete', 'compliance_ready', 'active_for_commission'].includes(partner.complianceStatus) && (
+        <div className={`flex items-center justify-between gap-3 p-3 rounded-xl border ${isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-200'}`}>
+          <div className="flex items-center gap-2">
+            <CheckCircle size={16} className="text-emerald-500 shrink-0" />
+            <p className={`text-sm ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
+              Profil complet — commissions activées.
+            </p>
+          </div>
+          <Link
+            href="/dashboard/profile"
+            className={`text-xs font-medium shrink-0 ${isDark ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 hover:text-emerald-700'}`}
+          >
+            Modifier →
+          </Link>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Commandes" value={stats.totalOrders} icon={ShoppingBag} color="blue" isDark={isDark} />
         <StatCard label="Revenu généré" value={fmt(stats.totalRevenue)} icon={TrendingUp} color="purple" isDark={isDark} />
-        <StatCard label="Commissions en attente" value={fmt(stats.pendingCommission)} sub={`${stats.pendingCount} en cours`} icon={Clock} color="amber" isDark={isDark} />
+        <StatCard label="Commissions confirmées" value={fmt(stats.pendingCommission)} sub={`${stats.pendingCount} confirmées`} icon={Clock} color="blue" isDark={isDark} />
         <StatCard label="Total encaissé" value={fmt(stats.paidCommission)} sub={`${stats.paidCount} payées`} icon={CheckCircle} color="emerald" isDark={isDark} />
       </div>
 

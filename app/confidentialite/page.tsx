@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Users } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import SetsenFooter from '@/app/components/SetsenFooter';
 
 export const metadata = {
@@ -9,11 +9,14 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Users size={22} className="text-[#c8102e]" />
-            <span className="text-lg font-bold text-gray-900">Setsen <span className="text-[#c8102e]">Partenaires</span></span>
+            <div className="w-7 h-7 bg-[#c8102e] rounded-lg flex items-center justify-center">
+              <Zap size={14} className="text-white" fill="white" />
+            </div>
+            <span className="text-lg font-bold tracking-tight text-gray-900">Setsen</span>
+            <span className="text-lg font-bold tracking-tight text-indigo-600 ml-0.5">Partenaires</span>
           </Link>
           <Link href="/" className="text-sm text-gray-500 hover:text-[#c8102e] transition-colors">← Retour</Link>
         </div>

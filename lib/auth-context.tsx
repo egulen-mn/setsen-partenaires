@@ -19,6 +19,13 @@ interface Partner {
   approved: boolean;
   tier: string;
   maxPartnerships: number;
+  address: string | null;
+  siret: string | null;
+  logoUrl: string | null;
+  profileCompleted: boolean;
+  complianceStatus: string;
+  restaurantDomain: string | null;
+  scanCount: number;
 }
 
 interface Partnership {
@@ -28,19 +35,24 @@ interface Partnership {
   restaurant?: { id: string; name: string } | null;
 }
 
+interface LoginResult {
+  isRestaurantPartner?: boolean;
+  restaurantSlug?: string | null;
+}
+
 interface AuthState {
   user: User | null;
   partner: Partner | null;
   partnerships: Partnership[];
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<LoginResult>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState>({
   user: null, partner: null, partnerships: [], loading: true,
-  login: async () => {}, logout: async () => {}, refresh: async () => {},
+  login: async () => ({}), logout: async () => {}, refresh: async () => {},
 });
 
 /** Set the partenaires_session presence flag on this origin. Fire-and-forget — never throws. */
@@ -91,12 +103,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { refresh(); }, [refresh]);
 
-  const login = async (email: string, password: string) => {
-    await auth.login(email, password);
+  const login = async (email: string, password: string): Promise<LoginResult> => {
+    const data = await auth.login(email, password);
     // Set the presence flag on the B2B origin before refreshing state so
     // any immediate navigation to /dashboard passes the middleware check.
     await setSessionFlag();
     await refresh();
+    return {
+      isRestaurantPartner: data?.isRestaurantPartner ?? false,
+      restaurantSlug: data?.restaurantSlug ?? null,
+    };
   };
 
   const logout = async () => {

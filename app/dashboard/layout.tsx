@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard, QrCode, Euro, Handshake, CreditCard,
-  LogOut, Building2, Menu, X, Sun, Moon,
+  LogOut, Building2, Menu, X, Sun, Moon, User,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/lib/theme-context';
@@ -29,6 +29,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loading && !user) router.replace('/login');
   }, [loading, user, router]);
+
+  useEffect(() => {
+    // Restaurant-category partners skip the profile completion flow — they manage
+    // their profile through their restaurant's admin backoffice instead.
+    const isRestaurantPartner = partner?.category === 'RESTAURANT' || !!partner?.restaurantDomain;
+    if (!loading && partner && !partner.profileCompleted && !isRestaurantPartner && pathname !== '/dashboard/complete-profile' && pathname !== '/dashboard/profile') {
+      router.replace('/dashboard/complete-profile');
+    }
+  }, [loading, partner, pathname, router]);
 
   if (loading) {
     return (
@@ -119,7 +128,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* Footer */}
         <div className={`p-3 border-t ${divider}`}>
-          <div className={`px-3 py-1.5 text-sm truncate mb-1 ${logoSub}`}>{user.name}</div>
+          <Link
+            href="/dashboard/profile"
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${pathname === '/dashboard/profile' ? navActive : navIdle}`}
+          >
+            <User size={17} />
+            <span className="truncate">{user.name}</span>
+          </Link>
           <button
             onClick={handleLogout}
             className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm transition ${logoutBtn}`}

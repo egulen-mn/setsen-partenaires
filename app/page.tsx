@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight, Check, ChevronDown, ChevronUp,
@@ -37,6 +37,106 @@ const FAQS = [
     a: 'Le système inclut des mécanismes de base pour détecter les patterns anormaux. Les conversions peuvent être revues manuellement. Nous privilégions la fiabilité des données plutôt que l\'automatisation totale.',
   },
 ];
+
+const PARTENAIRES_FEATURES = [
+  { group: 'Dashboard', items: ['Tableau de bord', 'Partenariats', 'QR Codes', 'Commissions', 'Paiements', 'Profil'] },
+  { group: 'QR Codes', items: ['Brandés (carré, A6, PNG, PDF)', 'Prévisualisation avant téléchargement', 'Comptage des scans'] },
+  { group: 'Commissions & paiements', items: ['Suivi par commande référencée', 'Relevés de paiement PDF'] },
+  { group: 'Profil & pages', items: ['Profil & conformité', 'Page marketplace', 'Page de référence', 'Invitations partenariat'] },
+];
+
+function PricingCardPartenaires({
+  tier, price, priceNote, noSubscription, description,
+  slots, slotLabel, slotBg, slotNum,
+  cardClass, tierClass, featureCheckClass, featureTextClass, groupLabelClass,
+  badge, badgeClass, dark, cta,
+}: {
+  tier: string; price: string; priceNote: string | null; noSubscription: boolean;
+  description: string; slots: number; slotLabel: string; slotBg: string; slotNum: string;
+  cardClass: string; tierClass: string; featureCheckClass: string; featureTextClass: string;
+  groupLabelClass: string; badge?: string; badgeClass?: string; dark?: boolean; cta: ReactNode;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const priceColor = dark ? 'text-white' : 'text-gray-900';
+  const noteColor = dark ? 'text-gray-500' : 'text-gray-400';
+  const descColor = dark ? 'text-gray-400' : 'text-gray-500';
+  const dividerColor = dark ? 'border-white/10' : 'border-gray-100';
+  const expandLabelColor = dark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600';
+
+  return (
+    <div className={`rounded-3xl p-9 flex flex-col relative transition-all ${cardClass}`}>
+      {badge && (
+        <div className="absolute -top-3.5 left-9">
+          <span className={`text-[10px] font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full shadow-sm ${badgeClass}`}>{badge}</span>
+        </div>
+      )}
+
+      {/* Tier + price */}
+      <p className={`text-[10px] font-bold tracking-widest uppercase mb-4 ${badge ? 'mt-1' : ''} ${tierClass}`}>{tier}</p>
+      <div className="mb-1">
+        <span className={`text-5xl font-extrabold tracking-tight ${priceColor}`}>{price}</span>
+        {priceNote && <span className={`text-sm ml-2 ${noteColor}`}>{priceNote}</span>}
+      </div>
+      {noSubscription && (
+        <p className={`text-xs font-semibold mb-2 ${dark ? 'text-emerald-500/80' : 'text-indigo-500'}`}>
+          Pas d&apos;abonnement mensuel
+        </p>
+      )}
+      <p className={`text-sm leading-relaxed mb-8 ${descColor}`}>{description}</p>
+
+      {/* Slot hero */}
+      <div className={`rounded-2xl p-4 flex items-center gap-4 mb-8 ${dark ? 'bg-white/5 border border-white/10' : 'bg-gray-50 border border-gray-100'}`}>
+        <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center flex-shrink-0 ${slotBg}`}>
+          <span className={`text-3xl font-extrabold leading-none ${slotNum}`}>{slots}</span>
+          <span className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${slotNum} opacity-60`}>slot{slots > 1 ? 's' : ''}</span>
+        </div>
+        <div>
+          <p className={`text-base font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{slotLabel}</p>
+        </div>
+      </div>
+
+      {/* Feature summary — always visible */}
+      <div className={`border-t pt-6 mb-2 ${dividerColor}`}>
+        <ul className="space-y-2.5">
+          {['QR codes brandés par partenaire', 'Suivi des commissions & conversions', 'Relevés de paiement PDF', 'Page marketplace & page de référence'].map(f => (
+            <li key={f} className={`flex items-center gap-2.5 text-sm ${featureTextClass}`}>
+              <Check size={13} className={`flex-shrink-0 ${featureCheckClass}`} strokeWidth={2.5} />{f}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Expandable full feature list */}
+      <button
+        onClick={() => setExpanded(e => !e)}
+        className={`flex items-center gap-1.5 text-xs font-semibold mt-3 mb-1 transition-colors ${expandLabelColor}`}
+      >
+        {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+        {expanded ? 'Masquer le détail' : 'Voir toutes les fonctionnalités'}
+      </button>
+
+      {expanded && (
+        <div className={`mt-4 space-y-5 border-t pt-5 ${dividerColor}`}>
+          {PARTENAIRES_FEATURES.map(({ group, items }) => (
+            <div key={group}>
+              <p className={`text-[10px] font-bold tracking-widest uppercase mb-2 ${groupLabelClass}`}>{group}</p>
+              <ul className="space-y-1.5">
+                {items.map(f => (
+                  <li key={f} className={`flex items-center gap-2 text-sm ${featureTextClass}`}>
+                    <Check size={11} className={`flex-shrink-0 ${featureCheckClass}`} strokeWidth={2.5} />{f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex-1" />
+      {cta}
+    </div>
+  );
+}
 
 export default function PartenairesPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -80,11 +180,10 @@ export default function PartenairesPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <a href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-[#c8102e] rounded-lg flex items-center justify-center">
-              <Zap size={14} className="text-white" fill="white" />
+            <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <Network size={14} className="text-white" />
             </div>
-            <span className="text-lg font-bold tracking-tight">Setsen</span>
-            <span className="text-lg font-bold tracking-tight text-indigo-600 ml-0.5">Partenaires</span>
+            <span className="text-lg font-bold tracking-tight">Setsen <span className="text-indigo-600">Partenaires</span></span>
           </a>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
             <a href="#comment-ca-marche" className="hover:text-gray-900 transition-colors">Fonctionnement</a>
@@ -457,106 +556,90 @@ export default function PartenairesPage() {
       {/* ══════════════════════════════════════════════════════
           PRICING
       ══════════════════════════════════════════════════════ */}
-      <section id="tarifs" className="py-24 px-6 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Tarifs Setsen Partenaires</h2>
-            <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              Pas de commission sur vos commandes. Pas de frais cachés. Un investissement unique pour activer votre réseau local.
+      <section id="tarifs" className="py-28 px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+
+          {/* Section intro */}
+          <div className="text-center mb-20">
+            <p className="text-xs font-bold tracking-widest uppercase text-indigo-500 mb-4">Tarifs</p>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-5 leading-tight">
+              Simples, sans abonnement mensuel.
+            </h2>
+            <p className="text-lg text-gray-500 max-w-lg mx-auto leading-relaxed">
+              Toutes les fonctionnalités sont incluses dans chaque formule. La seule différence entre les plans : le nombre de partenaires actifs simultanément.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Lite — Free */}
-            <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 flex flex-col hover:border-gray-300 hover:shadow-lg transition-all">
-              <p className="text-xs font-bold tracking-widest uppercase text-gray-400 mb-4">Lite</p>
-              <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-5xl font-extrabold text-gray-900">Gratuit</span>
-              </div>
-              <ul className="space-y-3 mb-8 flex-1">
-                {[
-                  '1 slot partenaire',
-                  'Tableau de bord, partenariats, QR codes, commissions, paiements, profil',
-                  'QR codes brandés (carré, A6, PNG, PDF)',
-                  'Comptage des scans',
-                  'Suivi des commissions par commande',
-                  'Relevés de paiement (PDF)',
-                  'Profil & conformité',
-                  'Page marketplace & page de référence',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-700">
-                    <span className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check size={10} className="text-gray-500" strokeWidth={3} />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/signup"
-                className="inline-flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-700 px-6 py-3.5 rounded-full font-semibold text-sm hover:border-gray-400 transition-colors w-full">
-                Commencer gratuitement
-              </Link>
-            </div>
+          {/* Cards */}
+          <div className="grid md:grid-cols-3 gap-5 items-stretch">
 
-            {/* Essentiel — 399€ setup */}
-            <div className="bg-white border-2 border-indigo-200 rounded-3xl p-8 flex flex-col relative hover:border-indigo-400 hover:shadow-xl transition-all">
-              <div className="absolute -top-3 left-8">
-                <span className="bg-indigo-600 text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-sm">
-                  Populaire
-                </span>
-              </div>
-              <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 mb-4 mt-1">Essentiel</p>
-              <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-5xl font-extrabold text-gray-900">399 €</span>
-                <span className="text-sm text-gray-400">setup unique</span>
-              </div>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Tout ce qui est dans Lite, plus :</p>
-              <ul className="space-y-3 mb-8 flex-1">
-                {[
-                  '4 slots partenaires',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-700">
-                    <span className="w-4 h-4 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check size={10} className="text-indigo-600" strokeWidth={3} />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/signup"
-                className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-3.5 rounded-full font-semibold text-sm hover:bg-indigo-700 transition-colors w-full">
-                Démarrer avec Essentiel <ArrowRight size={15} />
-              </Link>
-              <p className="text-center text-xs text-gray-400 mt-3">Paiement unique · Pas d&apos;abonnement mensuel</p>
-            </div>
+            {/* ── Lite ── */}
+            <PricingCardPartenaires
+              tier="Lite"
+              price="Gratuit"
+              priceNote={null}
+              noSubscription={false}
+              description="Pour démarrer et tester le réseau partenaires."
+              slots={1}
+              slotLabel="1 partenaire actif"
+              slotBg="bg-gray-100"
+              slotNum="text-gray-700"
+              cardClass="bg-white border-2 border-gray-200 hover:border-gray-300 hover:shadow-md"
+              tierClass="text-gray-400"
+              featureCheckClass="text-gray-400"
+              featureTextClass="text-gray-700"
+              groupLabelClass="text-gray-400"
+              cta={<Link href="/signup" className="mt-10 inline-flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-800 px-6 py-4 rounded-full font-semibold text-sm hover:border-gray-500 hover:bg-gray-50 transition-all w-full">Commencer gratuitement</Link>}
+            />
 
-            {/* Pro — 799€ setup */}
-            <div className="bg-gray-900 text-white border-2 border-gray-800 rounded-3xl p-8 flex flex-col hover:border-gray-600 hover:shadow-xl transition-all">
-              <p className="text-xs font-bold tracking-widest uppercase text-emerald-400 mb-4">Pro</p>
-              <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-5xl font-extrabold text-white">799 €</span>
-                <span className="text-sm text-gray-500">setup unique</span>
-              </div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Tout ce qui est dans Essentiel, plus :</p>
-              <ul className="space-y-3 mb-8 flex-1">
-                {[
-                  '10 slots partenaires',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-300">
-                    <span className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check size={10} className="text-emerald-400" strokeWidth={3} />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button onClick={scrollToContact}
-                className="inline-flex items-center justify-center gap-2 bg-white text-gray-900 px-6 py-3.5 rounded-full font-semibold text-sm hover:bg-gray-100 transition-colors w-full">
-                Passer au Pro <ArrowRight size={15} />
-              </button>
-              <p className="text-center text-xs text-gray-500 mt-3">Paiement unique</p>
-            </div>
+            {/* ── Essentiel ── */}
+            <PricingCardPartenaires
+              tier="Essentiel"
+              price="399 €"
+              priceNote="setup unique"
+              noSubscription={true}
+              description="Pour les restaurants qui veulent activer plusieurs partenaires locaux."
+              slots={4}
+              slotLabel="4 partenaires actifs"
+              slotBg="bg-indigo-100"
+              slotNum="text-indigo-700"
+              cardClass="bg-white border-2 border-indigo-300 hover:border-indigo-500 hover:shadow-xl"
+              tierClass="text-indigo-600"
+              featureCheckClass="text-indigo-500"
+              featureTextClass="text-gray-700"
+              groupLabelClass="text-gray-400"
+              badge="Populaire"
+              badgeClass="bg-indigo-600 text-white"
+              cta={<Link href="/signup" className="mt-10 inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-4 rounded-full font-semibold text-sm hover:bg-indigo-700 transition-colors w-full">Choisir Essentiel <ArrowRight size={15} /></Link>}
+            />
+
+            {/* ── Pro ── */}
+            <PricingCardPartenaires
+              tier="Pro"
+              price="799 €"
+              priceNote="setup unique"
+              noSubscription={true}
+              description="Pour les restaurants avec un réseau local dense à activer."
+              slots={10}
+              slotLabel="10 partenaires actifs"
+              slotBg="bg-emerald-500/20"
+              slotNum="text-emerald-300"
+              cardClass="bg-[#0f172a] border-2 border-white/10 hover:border-white/20 hover:shadow-2xl"
+              tierClass="text-emerald-400"
+              featureCheckClass="text-gray-500"
+              featureTextClass="text-gray-300"
+              groupLabelClass="text-gray-600"
+              dark={true}
+              cta={<button onClick={scrollToContact} className="mt-10 inline-flex items-center justify-center gap-2 bg-white text-gray-900 px-6 py-4 rounded-full font-semibold text-sm hover:bg-gray-100 transition-colors w-full">Choisir Pro <ArrowRight size={15} /></button>}
+            />
+
           </div>
+
+          {/* Bottom reassurance */}
+          <p className="text-center text-sm text-gray-400 mt-10">
+            Paiement unique · Pas d&apos;abonnement · Pas de commission sur vos commandes
+          </p>
+
         </div>
       </section>
 
