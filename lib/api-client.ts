@@ -124,6 +124,30 @@ export const restaurants = {
     request<{ restaurants: { id: string; name: string; slug: string; email: string | null; primaryDomain: string; address: string | null }[] }>(
       'GET', `/api/partner/restaurants/search?q=${encodeURIComponent(q)}`
     ),
+  discover: (params?: { search?: string; page?: number; limit?: number }) => {
+    const p = new URLSearchParams();
+    if (params?.search) p.set('search', params.search);
+    if (params?.page) p.set('page', String(params.page));
+    if (params?.limit) p.set('limit', String(params.limit));
+    return request<{
+      restaurants: Array<{
+        restaurantId: string;
+        name: string;
+        address: string | null;
+        logoUrl: string | null;
+        slug: string;
+        commissionPercent: number;
+        firstOrderDiscountEnabled: boolean;
+        firstOrderDiscountPercent: number | null;
+        offerStatus: string;
+        partnershipStatus: string | null;
+        partnershipId: string | null;
+      }>;
+      total: number;
+      page: number;
+      pages: number;
+    }>('GET', `/api/partner/restaurants/discover?${p.toString()}`);
+  },
 };
 
 // ── Payouts ─────────────────────────────────────────────────────────────────

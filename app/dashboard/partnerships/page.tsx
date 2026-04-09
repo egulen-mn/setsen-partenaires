@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Handshake, CheckCircle, Clock, XCircle, AlertTriangle, Plus, Send, Building2, PhoneCall, ArrowUpCircle, Search, MapPin, Trash2 } from 'lucide-react';
+import { Handshake, CheckCircle, Clock, XCircle, AlertTriangle, Plus, Send, Building2, PhoneCall, ArrowUpCircle, Search, MapPin, Trash2, Percent, Tag, ChevronRight, Loader2 } from 'lucide-react';
 import { partnerships as partnershipsApi, partnerActions, restaurants as restaurantsApi } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/lib/theme-context';
@@ -43,11 +43,39 @@ export default function PartnershipsPage() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
+  // Discovery state
+  type DiscoverRestaurant = {
+    restaurantId: string;
+    name: string;
+    address: string | null;
+    logoUrl: string | null;
+    slug: string;
+    commissionPercent: number;
+    firstOrderDiscountEnabled: boolean;
+    firstOrderDiscountPercent: number | null;
+    offerStatus: string;
+    partnershipStatus: string | null;
+    partnershipId: string | null;
+  };
+  const [showDiscover, setShowDiscover] = useState(false);
+  const [discoverSearch, setDiscoverSearch] = useState('');
+  const [discoverResults, setDiscoverResults] = useState<DiscoverRestaurant[]>([]);
+  const [discoverLoading, setDiscoverLoading] = useState(false);
+  const [discoverPage, setDiscoverPage] = useState(1);
+  const [discoverPages, setDiscoverPages] = useState(1);
+  const [requestingId, setRequestingId] = useState<string | null>(null);
+  const [requestConfirm, setRequestConfirm] = useState<DiscoverRestaurant | null>(null);
+  const discoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     partnershipsApi.list()
       .then(d => setData(d.partnerships))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (showDiscover) fetchDiscover(discoverSearch, discoverPage);
+  }, [showDiscover, discoverPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = async () => {
     const d = await partnershipsApi.list();
@@ -79,6 +107,38 @@ export default function PartnershipsPage() {
     await partnershipsApi.terminate(id);
     setTerminateId(null);
     await refreshAll();
+  };
+
+  const fetchDiscover = useCallback(async (search: string, page: number) => {
+    setDiscoverLoading(true);
+    try {
+      const res = await restaurantsApi.discover({ search: search || undefined, page, limit: 12 });
+      setDiscoverResults(res.restaurants);
+      setDiscoverPages(res.pages);
+    } catch { /* ignore */ }
+    finally { setDiscoverLoading(false); }
+  }, []);
+
+  const handleDiscoverSearch = useCallback((value: string) => {
+    setDiscoverSearch(value);
+    setDiscoverPage(1);
+    if (discoverTimeout.current) clearTimeout(discoverTimeout.current);
+    discoverTimeout.current = setTimeout(() => fetchDiscover(value, 1), 350);
+  }, [fetchDiscover]);
+
+  const handleRequestPartnership = async (restaurant: DiscoverRestaurant) => {
+    setRequestingId(restaurant.restaurantId);
+    try {
+      await partnershipsApi.requestNew(restaurant.restaurantId);
+      setRequestConfirm(null);
+      await refreshAll();
+      // Refresh discovery to update status
+      await fetchDiscover(discoverSearch, discoverPage);
+    } catch (err: any) {
+      alert(err.message || 'Erreur lors de la demande de partenariat.');
+    } finally {
+      setRequestingId(null);
+    }
   };
 
   const handleNameChange = useCallback((value: string) => {
@@ -177,12 +237,24 @@ export default function PartnershipsPage() {
                 : <><ArrowUpCircle size={14} /> Limite atteinte — passez au Starter ({UPGRADE_PRICE} €) pour 4 partenariats</>}
             </div>
           ) : (
-            <button
-              onClick={() => setShowInvite(!showInvite)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#c8102e] hover:bg-[#a00d25] text-white rounded-lg text-sm font-medium transition"
-            >
-              <Plus size={16} /> Inviter un restaurant
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => { setShowDiscover(v => !v); setShowInvite(false); }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition border ${
+                  showDiscover
+                    ? isDark ? 'bg-[#c8102e]/20 border-[#c8102e]/40 text-[#c8102e]' : 'bg-red-50 border-red-200 text-[#c8102e]'
+                    : isDark ? 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Search size={15} /> Découvrir
+              </button>
+              <button
+                onClick={() => { setShowInvite(!showInvite); setShowDiscover(false); }}
+                className="flex items-center gap-2 px-4 py-2 bg-[#c8102e] hover:bg-[#a00d25] text-white rounded-lg text-sm font-medium transition"
+              >
+                <Plus size={16} /> Inviter
+              </button>
+            </div>
           )
         )}
       </div>
@@ -313,6 +385,161 @@ export default function PartnershipsPage() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* Discovery panel */}
+      {showDiscover && (
+        <div className={`border rounded-xl overflow-hidden ${isDark ? 'border-white/10 bg-white/3' : 'border-gray-200 bg-gray-50'}`}>
+          <div className={`flex items-center justify-between gap-3 px-5 py-3 border-b ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'}`}>
+            <div className="flex items-center gap-2">
+              <Search size={15} className="text-[#c8102e]" />
+              <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Découvrir des restaurants partenaires</span>
+            </div>
+            <div className="relative">
+              <Search size={13} className={`absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none ${muted}`} />
+              <input
+                type="text"
+                placeholder="Rechercher..."
+                value={discoverSearch}
+                onChange={e => handleDiscoverSearch(e.target.value)}
+                className={`pl-8 pr-3 py-1.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-[#c8102e]/30 ${
+                  isDark ? 'bg-white/5 border-white/10 text-white placeholder-gray-500' : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
+                }`}
+              />
+            </div>
+          </div>
+
+          {discoverLoading ? (
+            <div className={`flex items-center justify-center py-10 ${muted}`}>
+              <Loader2 size={20} className="animate-spin mr-2" /> Chargement...
+            </div>
+          ) : discoverResults.length === 0 ? (
+            <div className={`text-center py-10 text-sm ${muted}`}>
+              Aucun restaurant disponible pour le moment.
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 divide-y sm:divide-y-0">
+                {discoverResults.map(r => {
+                  const alreadyActive = r.partnershipStatus === 'ACTIVE';
+                  const alreadyPending = r.partnershipStatus === 'PENDING';
+                  return (
+                    <div key={r.restaurantId} className={`p-4 flex flex-col gap-3 border-b sm:border-b-0 sm:border-r last:border-0 ${isDark ? 'border-white/8' : 'border-gray-100'}`}>
+                      <div className="flex items-start gap-3">
+                        {r.logoUrl ? (
+                          <img src={r.logoUrl} alt={r.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                        ) : (
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${isDark ? 'bg-white/10' : 'bg-gray-100'}`}>
+                            <Building2 size={18} className={muted} />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className={`font-semibold text-sm truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>{r.name}</div>
+                          {r.address && (
+                            <div className={`text-xs truncate mt-0.5 flex items-center gap-1 ${muted}`}>
+                              <MapPin size={10} className="flex-shrink-0" />{r.address}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full ${isDark ? 'bg-[#c8102e]/15 text-[#e8304e]' : 'bg-red-50 text-[#c8102e]'}`}>
+                          <Percent size={10} /> Commission {r.commissionPercent}%
+                        </span>
+                        {r.firstOrderDiscountEnabled && r.firstOrderDiscountPercent && (
+                          <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full ${isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-700'}`}>
+                            <Tag size={10} /> -{r.firstOrderDiscountPercent}% 1re commande
+                          </span>
+                        )}
+                      </div>
+
+                      {alreadyActive ? (
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full self-start ${isDark ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-50 text-emerald-700'}`}>
+                          ✓ Partenariat actif
+                        </span>
+                      ) : alreadyPending ? (
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full self-start ${isDark ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
+                          ⏳ Demande en attente
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => setRequestConfirm(r)}
+                          disabled={requestingId === r.restaurantId}
+                          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#c8102e] text-white hover:bg-[#a00d24] transition disabled:opacity-50 self-start"
+                        >
+                          {requestingId === r.restaurantId
+                            ? <Loader2 size={12} className="animate-spin" />
+                            : <ChevronRight size={12} />
+                          }
+                          Demander un partenariat
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              {discoverPages > 1 && (
+                <div className={`flex items-center justify-center gap-3 px-5 py-3 border-t text-sm ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+                  <button disabled={discoverPage <= 1} onClick={() => setDiscoverPage(p => p - 1)} className="px-3 py-1 rounded-lg disabled:opacity-40 transition hover:bg-white/10">←</button>
+                  <span className={muted}>{discoverPage} / {discoverPages}</span>
+                  <button disabled={discoverPage >= discoverPages} onClick={() => setDiscoverPage(p => p + 1)} className="px-3 py-1 rounded-lg disabled:opacity-40 transition hover:bg-white/10">→</button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Request confirmation modal */}
+      {requestConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className={`w-full max-w-md rounded-2xl p-6 shadow-2xl ${isDark ? 'bg-gray-900 border border-white/10' : 'bg-white border border-gray-200'}`}>
+            <h3 className={`font-bold text-lg mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Demander un partenariat</h3>
+            <p className={`text-sm mb-4 ${muted}`}>
+              Vous êtes sur le point de demander un partenariat avec <strong className={isDark ? 'text-white' : 'text-gray-900'}>{requestConfirm.name}</strong> selon les conditions ci-dessous.
+            </p>
+            <div className={`rounded-xl p-4 mb-4 space-y-2 ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-50 border border-gray-200'}`}>
+              <div className="flex items-center gap-2 text-sm">
+                <Percent size={14} className="text-[#c8102e]" />
+                <span className={muted}>Commission partenaire :</span>
+                <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{requestConfirm.commissionPercent}%</span>
+              </div>
+              {requestConfirm.firstOrderDiscountEnabled && requestConfirm.firstOrderDiscountPercent ? (
+                <div className="flex items-center gap-2 text-sm">
+                  <Tag size={14} className="text-emerald-500" />
+                  <span className={muted}>Offre client :</span>
+                  <span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>-{requestConfirm.firstOrderDiscountPercent}% sur la 1re commande</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-sm">
+                  <Tag size={14} className={muted} />
+                  <span className={muted}>Offre client :</span>
+                  <span className={muted}>Aucune réduction</span>
+                </div>
+              )}
+            </div>
+            <p className={`text-xs mb-5 ${muted}`}>
+              En envoyant votre demande, vous confirmez que vous acceptez les conditions partenaires proposées par ce restaurant.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleRequestPartnership(requestConfirm)}
+                disabled={!!requestingId}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#c8102e] text-white rounded-xl text-sm font-semibold hover:bg-[#a00d24] transition disabled:opacity-50"
+              >
+                {requestingId ? <Loader2 size={14} className="animate-spin" /> : null}
+                Confirmer la demande
+              </button>
+              <button
+                onClick={() => setRequestConfirm(null)}
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition ${isDark ? 'bg-white/8 hover:bg-white/12 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {activeData.length === 0 && terminatedData.length === 0 ? (
@@ -451,6 +678,23 @@ function PartnershipCard({
           )}
         </div>
       </div>
+
+      {/* Commission info from PartnershipOffer */}
+      {(p.commissionPercent !== undefined || p.firstOrderDiscountEnabled) && (
+        <div className={`flex flex-wrap gap-2 mt-3`}>
+          {p.commissionPercent !== undefined && (
+            <span className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${isDark ? 'bg-[#c8102e]/15 text-[#e8304e]' : 'bg-red-50 text-[#c8102e]'}`}>
+              Commission : {p.commissionPercent}%
+              {p.offerSource === 'override' && <span className={`ml-1 opacity-70`}>(personnalisée)</span>}
+            </span>
+          )}
+          {p.firstOrderDiscountEnabled && p.firstOrderDiscountPercent && (
+            <span className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-700'}`}>
+              Offre client : -{p.firstOrderDiscountPercent}% 1re commande
+            </span>
+          )}
+        </div>
+      )}
 
       {p.agreedAt && (
         <div className={`text-xs mt-2 ${muted}`}>Accepté le {fmtDate(p.agreedAt)}</div>
