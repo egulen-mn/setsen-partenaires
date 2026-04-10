@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ChefHat, MapPin, ArrowRight, Loader2, Handshake } from 'lucide-react';
+import { ChefHat, MapPin, ArrowRight, Loader2, Handshake, Building2 } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://setsen.fr';
 const B2B_BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://partenaires.setsen.fr';
@@ -74,39 +74,58 @@ export default function MarketplacePage() {
     <div className="min-h-screen bg-white flex flex-col">
 
       {/* ── Partner strip ── */}
-      <div className="bg-[#c8102e] px-6 pt-10 pb-12 text-white text-center">
-        {data.partner.logoUrl ? (
-          <img
-            src={data.partner.logoUrl}
-            alt={data.partner.companyName}
-            className="w-14 h-14 rounded-xl object-cover mx-auto mb-3 shadow-md"
-          />
-        ) : (
-          <div className="w-14 h-14 rounded-xl bg-white/15 flex items-center justify-center mx-auto mb-3">
-            <Handshake size={22} className="text-white/80" />
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#d41138] via-[#c8102e] to-[#a90d28] px-6 pt-9 pb-12 text-white">
+        <div className="pointer-events-none absolute -top-14 -right-10 w-36 h-36 rounded-full bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-16 -left-10 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
+
+        <div className="relative max-w-md mx-auto">
+          <div className="flex items-center justify-center gap-4">
+            {data.partner.logoUrl ? (
+              <img
+                src={data.partner.logoUrl}
+                alt={data.partner.companyName}
+                className="w-[68px] h-[68px] rounded-2xl object-cover shadow-md ring-2 ring-white/25 shrink-0"
+              />
+            ) : (
+              <div className="w-[68px] h-[68px] rounded-2xl bg-white/15 flex items-center justify-center ring-2 ring-white/20 shrink-0">
+                <Handshake size={26} className="text-white/85" />
+              </div>
+            )}
+            <div className="text-left">
+              <p className="text-[10px] font-semibold text-white/60 uppercase tracking-[0.16em] mb-1">
+                Recommandé par
+              </p>
+              <h1 className="text-[34px] leading-none font-extrabold tracking-tight">{data.partner.companyName}</h1>
+            </div>
           </div>
-        )}
-        <p className="text-xs font-medium text-white/60 uppercase tracking-widest mb-1">Recommandé par</p>
-        <h1 className="text-2xl font-bold">{data.partner.companyName}</h1>
-        <p className="text-sm text-white/70 mt-2 max-w-xs mx-auto leading-relaxed">
-          Vos voisins se recommandent entre eux — choisissez un restaurant partenaire de votre quartier.
-        </p>
+
+          <p className="text-sm text-white/75 mt-4 leading-relaxed text-center">
+            Vos voisins se recommandent entre eux — choisissez un restaurant partenaire de votre quartier.
+          </p>
+
+          <div className="mt-4 flex items-center justify-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/12 border border-white/20 text-white/90 text-xs font-medium">
+              <Building2 size={13} />
+              {data.restaurants.length} restaurant{data.restaurants.length > 1 ? 's' : ''} partenaire{data.restaurants.length > 1 ? 's' : ''}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── Content ── */}
-      <div className="flex-1 max-w-sm mx-auto w-full px-5 -mt-5 pb-10">
+      <div className="flex-1 max-w-md mx-auto w-full px-5 -mt-6 pb-12">
 
         <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3 text-center">
           Restaurants partenaires
         </p>
 
-        <div className="space-y-3 mb-6">
+        <div className="space-y-3 mb-8">
           {data.restaurants.map((r) => (
             <button
               key={r.slug}
               onClick={() => handleSelect(r)}
               disabled={!!selecting}
-              className="w-full flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-[#c8102e]/20 hover:shadow-md transition-all text-left group disabled:opacity-60"
+              className="w-full flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-200 shadow-sm hover:border-[#c8102e]/25 hover:shadow-md transition-all text-left group disabled:opacity-60"
             >
               <div className="w-12 h-12 rounded-xl shrink-0 overflow-hidden bg-gray-100 flex items-center justify-center">
                 {r.logoUrl ? (
@@ -124,6 +143,9 @@ export default function MarketplacePage() {
                   {r.domain}
                 </div>
               </div>
+              <span className="hidden sm:inline text-xs font-semibold text-[#c8102e] bg-[#c8102e]/10 border border-[#c8102e]/15 rounded-full px-2.5 py-1">
+                Accéder
+              </span>
               {selecting === r.slug
                 ? <Loader2 size={15} className="animate-spin text-gray-300 shrink-0" />
                 : <ArrowRight size={15} className="text-gray-300 group-hover:text-[#c8102e] transition-colors shrink-0" />}
@@ -131,9 +153,9 @@ export default function MarketplacePage() {
           ))}
         </div>
 
-        <p className="text-center text-[11px] text-gray-300">
+        <p className="text-center text-[11px] text-gray-400">
           Propulsé par{' '}
-          <a href="https://setsen.fr" target="_blank" rel="noopener noreferrer" className="text-gray-400 underline">
+          <a href="https://setsen.fr" target="_blank" rel="noopener noreferrer" className="text-gray-500 underline">
             Setsen
           </a>
         </p>

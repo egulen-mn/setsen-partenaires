@@ -6,6 +6,7 @@ import { Building2, MapPin, FileText, ImageIcon, Loader2, Upload, CheckCircle } 
 import { useAuth } from '@/lib/auth-context';
 import { profile } from '@/lib/api-client';
 import { useTheme } from '@/lib/theme-context';
+import AddressAutocomplete from '@/lib/AddressAutocomplete';
 
 export default function CompleteProfilePage() {
   const { partner, refresh } = useAuth();
@@ -95,12 +96,12 @@ export default function CompleteProfilePage() {
             <label className={`flex items-center gap-1.5 text-xs font-medium mb-1.5 ${labelCls}`}>
               <MapPin size={13} /> Adresse complète <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
+            <AddressAutocomplete
               value={address}
-              onChange={e => setAddress(e.target.value)}
+              onChange={setAddress}
+              isDark={isDark}
+              placeholder="12 Rue de la Paix, 75001 Paris"
               className={`w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500/30 ${inputCls}`}
-              required
             />
           </div>
 

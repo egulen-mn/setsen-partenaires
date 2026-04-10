@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, Clock, CheckCircle, ShoppingBag, QrCode, RefreshCw, AlertTriangle, AlertCircle, ExternalLink, UtensilsCrossed } from 'lucide-react';
+import { TrendingUp, Clock, CheckCircle, ShoppingBag, QrCode, RefreshCw, AlertTriangle, AlertCircle, ExternalLink, UtensilsCrossed, Tag } from 'lucide-react';
 import Link from 'next/link';
 import { dashboard } from '@/lib/api-client';
 import { useAuth } from '@/lib/auth-context';
@@ -29,6 +29,8 @@ interface RecentOrder {
   orderNumber: string;
   createdAt: string;
   subtotal: number;
+  total: number;
+  referralDiscountAmount?: number | null;
   status: string;
   referralCode: string;
 }
@@ -217,7 +219,19 @@ export default function DashboardPage() {
                     <tr key={o.id} className={`border-b transition-colors ${tr}`}>
                       <td className={`px-4 py-3 font-mono text-xs ${muted}`}>{o.orderNumber}</td>
                       <td className={`px-4 py-3 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>{fmtDate(o.createdAt)}</td>
-                      <td className={`px-4 py-3 text-right font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{fmt(o.subtotal || 0)}</td>
+                      <td className={`px-4 py-3 text-right font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {o.referralDiscountAmount ? (
+                          <div className="flex flex-col items-end gap-0.5">
+                            <span className={`text-xs line-through ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{fmt(o.subtotal)}</span>
+                            <span className="text-emerald-500">{fmt(o.total)}</span>
+                            <span className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-700'}`}>
+                              <Tag size={9} /> -{fmt(o.referralDiscountAmount)}
+                            </span>
+                          </div>
+                        ) : (
+                          fmt(o.total || o.subtotal || 0)
+                        )}
+                      </td>
                       <td className="px-4 py-3 text-center">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           o.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-500' :

@@ -2,15 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ChefHat, MapPin, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { ChefHat, MapPin, ArrowRight, Loader2, ShieldCheck, Handshake } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://setsen.fr';
 
 interface ReferralContext {
   partner: { companyName: string; logoUrl: string | null; category: string; description: string | null };
-  restaurant: { name: string; logoUrl: string | null; slug: string; tier: string; address: string | null };
+  restaurant: {
+    name: string;
+    logoUrl: string | null;
+    slug: string;
+    tier: string;
+    address: string | null;
+    description?: string | null;
+    heroEyebrow?: string | null;
+  };
   destinationUrl: string;
   brandingLevel: 'minimal' | 'standard';
+  offer?: { firstOrderDiscountPercent: number; discountLabel: string } | null;
 }
 
 export default function ReferralLandingPage() {
@@ -65,6 +74,7 @@ export default function ReferralLandingPage() {
   }
 
   const { partner, restaurant } = context!;
+  const offer = context?.offer ?? null;
   const isStandard = context!.brandingLevel === 'standard';
 
   return (
@@ -72,22 +82,30 @@ export default function ReferralLandingPage() {
       <div className="w-full max-w-sm">
 
         {/* ── Partner endorsement ── */}
-        <div className="bg-[#c8102e] px-6 pt-7 pb-10 text-white text-center">
-          {isStandard && partner.logoUrl ? (
-            <img
-              src={partner.logoUrl}
-              alt={partner.companyName}
-              className="w-12 h-12 rounded-xl object-cover mx-auto mb-3 shadow-sm ring-2 ring-white/20"
-            />
-          ) : null}
-          <p className="text-[10px] font-semibold text-white/50 uppercase tracking-[0.15em] mb-1">
-            Recommandé par
-          </p>
-          <h1 className="text-xl font-bold leading-snug">{partner.companyName}</h1>
+        <div className="bg-[#c8102e] px-6 pt-7 pb-10 text-white">
+          <div className="flex items-center justify-center gap-4">
+            {isStandard && partner.logoUrl ? (
+              <img
+                src={partner.logoUrl}
+                alt={partner.companyName}
+                className="w-[72px] h-[72px] rounded-2xl object-cover shadow-md ring-2 ring-white/25 shrink-0"
+              />
+            ) : (
+              <div className="w-[72px] h-[72px] rounded-2xl bg-white/15 flex items-center justify-center ring-2 ring-white/20 shrink-0">
+                <Handshake size={28} className="text-white/90" />
+              </div>
+            )}
+            <div className="text-left">
+              <p className="text-[10px] font-semibold text-white/60 uppercase tracking-[0.16em] mb-1">
+                Recommandé par
+              </p>
+              <h1 className="text-[34px] leading-none font-extrabold tracking-tight">{partner.companyName}</h1>
+            </div>
+          </div>
           {partner.description ? (
-            <p className="text-sm text-white/75 mt-1.5 leading-snug">{partner.description}</p>
+            <p className="text-sm text-white/80 mt-4 leading-snug text-center">{partner.description}</p>
           ) : (
-            <p className="text-sm text-white/60 mt-1.5 leading-snug">
+            <p className="text-sm text-white/70 mt-4 leading-snug text-center">
               Vos voisins se recommandent entre eux — découvrez leur adresse préférée.
             </p>
           )}
@@ -95,6 +113,13 @@ export default function ReferralLandingPage() {
 
         {/* ── Restaurant card ── */}
         <div className="mx-4 -mt-5 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+          {restaurant.heroEyebrow && (
+            <div className="px-5 pt-5 pb-0">
+              <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#c8102e]/10 border border-[#c8102e]/20 text-[#c8102e] text-[11px] font-semibold uppercase tracking-wide">
+                {restaurant.heroEyebrow}
+              </div>
+            </div>
+          )}
 
           {/* Identity row */}
           <div className="flex items-center gap-4 px-5 pt-5 pb-4">
@@ -122,6 +147,12 @@ export default function ReferralLandingPage() {
             </div>
           </div>
 
+          {restaurant.description && (
+            <p className="px-5 pb-4 text-sm leading-6 text-gray-600">
+              {restaurant.description}
+            </p>
+          )}
+
           {/* Benefit badge */}
           <div className="mx-5 mb-5 px-4 py-3 bg-[#c8102e]/5 border border-[#c8102e]/10 rounded-xl">
             <p className="text-xs font-semibold text-[#c8102e] uppercase tracking-wide mb-0.5">
@@ -131,6 +162,17 @@ export default function ReferralLandingPage() {
               Une adresse de confiance, choisie et recommandée par {partner.companyName}.
             </p>
           </div>
+
+          {offer && (
+            <div className="mx-5 mb-5 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200">
+              <p className="text-[11px] uppercase tracking-wide font-bold text-emerald-700 mb-0.5">
+                Offre partenaire
+              </p>
+              <p className="text-sm font-semibold text-emerald-700">
+                {offer.discountLabel}
+              </p>
+            </div>
+          )}
 
           {/* CTA — inside the card, flush bottom */}
           <div className="px-5 pb-5">

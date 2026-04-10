@@ -65,6 +65,7 @@ export default function PartnershipsPage() {
   const [discoverPages, setDiscoverPages] = useState(1);
   const [requestingId, setRequestingId] = useState<string | null>(null);
   const [requestConfirm, setRequestConfirm] = useState<DiscoverRestaurant | null>(null);
+  const [requestError, setRequestError] = useState<string | null>(null);
   const discoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -131,11 +132,12 @@ export default function PartnershipsPage() {
     try {
       await partnershipsApi.requestNew(restaurant.restaurantId);
       setRequestConfirm(null);
+      setRequestError(null);
       await refreshAll();
       // Refresh discovery to update status
       await fetchDiscover(discoverSearch, discoverPage);
     } catch (err: any) {
-      alert(err.message || 'Erreur lors de la demande de partenariat.');
+      setRequestError(err?.message || 'Erreur lors de la demande de partenariat.');
     } finally {
       setRequestingId(null);
     }
@@ -258,6 +260,22 @@ export default function PartnershipsPage() {
           )
         )}
       </div>
+
+      {requestError && (
+        <div className={`rounded-xl border px-4 py-3 flex items-start justify-between gap-3 ${isDark ? 'bg-red-500/10 border-red-500/30 text-red-300' : 'bg-red-50 border-red-200 text-red-700'}`}>
+          <div className="flex items-start gap-2">
+            <AlertTriangle size={15} className="mt-0.5 flex-shrink-0" />
+            <p className="text-sm">{requestError}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setRequestError(null)}
+            className={`text-xs underline ${isDark ? 'text-red-300' : 'text-red-700'}`}
+          >
+            Fermer
+          </button>
+        </div>
+      )}
 
       {/* Invite form */}
       {showInvite && (
@@ -460,11 +478,11 @@ export default function PartnershipsPage() {
                         </span>
                       ) : alreadyPending ? (
                         <span className={`text-xs font-medium px-2 py-1 rounded-full self-start ${isDark ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-50 text-amber-700'}`}>
-                          ⏳ Demande en attente
+                          Demande en attente
                         </span>
                       ) : (
                         <button
-                          onClick={() => setRequestConfirm(r)}
+                          onClick={() => { setRequestError(null); setRequestConfirm(r); }}
                           disabled={requestingId === r.restaurantId}
                           className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#c8102e] text-white hover:bg-[#a00d24] transition disabled:opacity-50 self-start"
                         >
